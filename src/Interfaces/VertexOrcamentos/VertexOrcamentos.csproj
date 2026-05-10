@@ -10,5 +10,6 @@
 
   <ItemGroup>
     <PackageReference Include="MudBlazor" Version="9.*" />
+    <PackageReference Include="MudBlazor.Templates" Version="4.3.0" />
   </ItemGroup>
 </Project>

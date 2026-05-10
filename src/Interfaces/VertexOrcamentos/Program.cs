@@ -6,6 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add MudBlazor services
 builder.Services.AddMudServices();
 
+// Add HttpClient
+builder.Services.AddScoped<HttpClient>(sp => new HttpClient { BaseAddress = new Uri("http://localhost:5189") });
+
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
