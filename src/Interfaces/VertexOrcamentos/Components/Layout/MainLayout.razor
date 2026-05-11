@@ -4,11 +4,11 @@
 <MudPopoverProvider />
 <MudLayout>
     <MudAppBar Color="Color.Primary" Fixed="false">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" />
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"/>
         <MudButton Variant="Variant.Text" Color="Color.Secondary" Href="/">Home</MudButton>
         <MudButton Variant="Variant.Text" Color="Color.Secondary" Href="Estoque">Estoque</MudButton>
-        <MudSpacer />
-        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" />
+        <MudButton StartIcon="@Icons.Material.Filled.Person" Variant="Variant.Filled" Color="Color.Primary" Href="login">Perfil</MudButton>
+        <MudSpacer/>
     </MudAppBar>
     <MudMainContent Class="pt-16 pa-4">
         @Body
@@ -54,17 +54,18 @@
 
     private readonly PaletteDark _darkPalette = new()
     {
-        Primary = "#7e6fff",
-        Surface = "#1e1e2d",
-        Background = "#1a1a27",
+        Primary = "#62AEF0",
+        Secondary = "#A2D1FF",
+        Surface = "#12385C",
+        Background = "#001F3B",
         BackgroundGray = "#151521",
         AppbarText = "#92929f",
-        AppbarBackground = "rgba(26,26,39,0.8)",
-        DrawerBackground = "#1a1a27",
+        AppbarBackground = "#002A4F",
+        DrawerBackground = "#00152B",
         ActionDefault = "#74718e",
         ActionDisabled = "#9999994d",
         ActionDisabledBackground = "#605f6d4d",
-        TextPrimary = "#b2b0bf",
+        TextPrimary = "#F5F7FA",
         TextSecondary = "#92929f",
         TextDisabled = "#ffffff33",
         DrawerIcon = "#92929f",
