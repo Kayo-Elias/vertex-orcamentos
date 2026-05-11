@@ -4,19 +4,21 @@
 
 <PageTitle>Vertex | Orcamentos</PageTitle>
 
- <MudText Typo="Typo.h3" Class="d-flex justify-center">ESTOQUE</MudText>
-    
+<MudIcon Icon="@Icons.Material.Filled.Warehouse" Size="Size.Large" Style="color:white;" />
+ <MudText Typo="Typo.h5" Class="d-flex justify-left">ESTOQUE</MudText>
+ <MudText Typo="Typo.body1" Style="color:#9fb3c8;">Gerencie e acompanhe os itens em estoque </MudText>
+<MudSpacer></MudSpacer>
+<MudStack Class="d-flex justify-content mb-4 object-right-bottom" Row ="true" Spacing="2" Justify="Justify.FlexEnd "AlignItems="AlignItems.Center">
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.AddCircle">Criar</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit">Editar</MudButton>
+    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">Excluir</MudButton>
+</MudStack>
+
 <MudDataGrid T="ItemEstoque" MultiSelection="true" Items="@Estoques" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@_quickFilter"
     Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
     <ToolBarContent>
-        <MudTextField @bind-Value="Pesquisa" Placeholder="Pesquisa" Adornment="Adornment.Start" Immediate="true" 
+        <MudTextField @bind-Value="Pesquisa" Placeholder="Pesquisar" Adornment="Adornment.Start" Immediate="true" 
           AdornmentIcon="@Icons.Material.Filled.Search" Style="width:200px" IconSize="Size.Medium"></MudTextField>
-    <MudStack Row="true" Spacing="2" Class="mb-4" Justify="Justify.FlexEnd">
-    <MudSpacer/>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.AddCircle">Criar</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.AddCircle">Editar</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.AddCircle">Excluir</MudButton>
-    </MudStack>
     </ToolBarContent>
     <Columns>
         <SelectColumn T="ItemEstoque" color="Color.Primary" />
@@ -25,7 +27,7 @@
         <PropertyColumn Property="x => x.Nome" Title="Nome"/>
         <PropertyColumn Property="x => x.Valor" Title="Valor unitário"/>
         <PropertyColumn Property="x => x.Quantidade" Title="Estoque"/>
-    </Columns>
+    </Columns> 
     <PagerContent>
         <MudDataGridPager T="ItemEstoque" />
     </PagerContent>
