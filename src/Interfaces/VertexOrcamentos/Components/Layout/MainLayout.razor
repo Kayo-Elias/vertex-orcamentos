@@ -3,12 +3,25 @@
 <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
 <MudPopoverProvider />
 <MudLayout>
-    <MudAppBar Color="Color.Primary" Fixed="false">
-    <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"/>
-         <MudButton Variant="Variant.Text" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.Home" Class="pa-4 mr-10" Href="/">Home</MudButton>
-         <MudButton Variant="Variant.Text" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.Description" Class="pa-4 mr-10" Href="Orcamentos">Orçamentos</MudButton>
-         <MudButton Variant="Variant.Text" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.People" Class="pa-4 mr-10" Href="Clientes">Clientes</MudButton>
-        <MudButton Variant="Variant.Text" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.Warehouse" Class="pa-4 mr-10" Href="Estoque">Estoque</MudButton>
+    <MudAppBar Elevation="12" Class= "d-flex" Style="background: linear-gradient(135deg, #071D36, #0B3A6A, #4FC3F7);" Dense="true" Fixed="false">
+
+    <MudStack Row="true" Class="d-flex justify-start align-center">
+         <MudLink Href="/">
+         <MudImage Fluid="true" Src="images/logo.png" Width="150" Height="56" Alt="Logo" Class="rounded-lg" />
+        </MudLink>
+    </MudStack>
+    <MudStack Row="true" Class="d-flex justify-content align-center" Spacing="3">
+        <MudButton Variant="Variant.Text" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.Description" Class="px-4 mr-2" Href="orcamentos">
+         Orçamentos
+         </MudButton>
+         <MudButton Variant="Variant.Text" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.People" Class="px-4 mr-2" Href="clientes">
+         Clientes
+         </MudButton>
+        <MudButton Variant="Variant.Text" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.Warehouse" Class="px-4 mr-2" Href="estoque">
+         Estoque
+        </MudButton>
+    </MudStack>
+
         <MudSpacer/>
         <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Person" Size="Size.Small"/>
     </MudAppBar>
@@ -56,9 +69,9 @@
 
     private readonly PaletteDark _darkPalette = new()
     {
-        Primary = "#19C2F0",
+        Primary = "#0B3A6A",
         Secondary = "#F5E900",
-        Tertiary = "#ffffffc4",
+        Tertiary = "#ffffff",
         Surface = "#071D36",
         Background = "#000C18",
         BackgroundGray = "#151521",
@@ -80,7 +93,7 @@
         Warning = "#ffb545",
         Error = "#ff3f5f",
         LinesDefault = "#33323e",
-        TableLines = "#000000",
+        TableLines = "#ffffff",
         Divider = "#292838",
         OverlayLight = "#1e1e2d80",
     };
