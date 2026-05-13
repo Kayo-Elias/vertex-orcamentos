@@ -6,34 +6,41 @@
 
 <div class="login-container">
 
-    <MudText Typo="Typo.h2" Class="logo-text">
-        <MudImage Src="images/logo.png" Alt="Logo" Width="400" class= "justify.center" />
-       
-    
-    </MudText>
+    <div class="title-area">
 
-    <MudText Typo="Typo.h5" Class="mb-6">
-        Entrar
-    </MudText>
+        <MudImage Src="images/logo.png"
+                  Alt="Logo"
+                  Class="logo-image" />
 
-    <MudPaper Class="login-box">
+        <MudText Typo="Typo.h5" Class="enter-text">
+            Entrar
+        </MudText>
 
-        <MudTextField T="string" Label="Usuário"
+    </div>
+
+    <MudPaper Elevation="8" Class="login-box">
+
+        <MudTextField T="string"
+                      Label="Usuário"
                       Variant="Variant.Outlined"
                       FullWidth="true"
-                      Class="mb-6" />
+                      ShrinkLabel="true" />
 
-        <MudTextField T="string" Label="Senha"
+        <MudTextField T="string"
+                      Label="Senha"
                       Variant="Variant.Outlined"
                       InputType="InputType.Password"
                       FullWidth="true"
-                      Class="mb-6" />
+                      ShrinkLabel="true"
+                      Class="mt-6" />
 
         <div class="button-area">
+
             <MudButton Variant="Variant.Filled"
                        Color="Color.Primary">
                 Entrar
             </MudButton>
+
         </div>
 
     </MudPaper>
@@ -42,50 +49,97 @@
 
 <style>
 
-html, body {
+html,
+body {
 
     margin: 0;
-
     padding: 0;
-
-    background-color: #001F3B;
 
     height: 100%;
 }
 
 .login-container {
-    height: 100vh;
+
+    min-height: 100vh;
+
     display: flex;
+
     flex-direction: column;
+
     justify-content: center;
+
     align-items: center;
-    transform: translateY(-40px);
-    background color: #001F3B
+
+    background: linear-gradient(
+        135deg,
+        #071D36,
+        #0B3A6A,
+        #4FC3F7
+    );
+
+    padding: 40px 20px;
 }
-.logo-text {
-    color: #F5F7FA;
-    margin-bottom: 8px;
+
+.title-area {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
 }
+
+.logo-image {
+
+    width: 240px;
+
+    max-width: 90%;
+
+    margin-bottom: 15px;
+
+    display: block;
+}
+
 .enter-text {
 
     color: #F5F7FA;
+
     margin-bottom: 40px;
+
+    font-weight: 500;
+
+    text-align: center;
 }
+
 .login-box {
+
     width: 90%;
+
     max-width: 650px;
+
     padding: 65px;
-    background-color: #12385C;
-    border-radius: 12px;
+
+    background: rgba(18,56,92,0.88) !important;
+
+    backdrop-filter: blur(10px);
+
+    border-radius: 16px;
+
     box-shadow: 0 8px 25px rgba(0,0,0,0.35);
 }
+
 .button-area {
 
     display: flex;
-    justify-content: flex-end;
-    margin-top: 20px;
-}
 
+    justify-content: flex-end;
+
+    margin-top: 30px;
+}
 
 .mud-button-filled-primary {
 
@@ -101,19 +155,9 @@ html, body {
     transform: scale(1.03);
 }
 
-.mud-input-control {
-
-    min-height: 60px;
-}
-
 .mud-input-label {
 
-    color: #F5F7FA;  !important;
-}
-
-.mud-input-label.mud-input-focused {
-
-    color: #3B82F6 !important;
+    color: rgba(255,255,255,0.7) !important;
 }
 
 .mud-input-outlined-border {
@@ -125,5 +169,10 @@ html, body {
 
     border-color: #3B82F6 !important;
 }
-</style>
 
+.mud-input-slot {
+
+    color: white !important;
+}
+
+</style>
