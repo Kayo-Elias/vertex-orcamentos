@@ -1,16 +1,15 @@
 @using System.Net.Http.Json
 @page "/estoque"
 
-<PageTitle>Vertex | Orcamentos</PageTitle>
+<PageTitle>Vertex | Estoque</PageTitle>
 
 <div Row="true" class="d-flex  justify-space-between align-center mb-2">
 <div>
-    <MudText Typo="Typo.h6">
-  <MudIcon Icon="@Icons.Material.Filled.Warehouse" Style="color:white; font-size:40px;" Class="me-5" />
+    <MudText Typo="Typo.h6" Class ="px-9">
     ESTOQUE
     </MudText>
     
-    <MudText Typo="Typo.body1" Style="color:#9fb3c8;">
+    <MudText Typo="Typo.body1" Class="px-9" Style="color:#9fb3c8;">
     Gerencie e acompanhe os itens em estoque 
     </MudText>
 </div>
@@ -19,7 +18,7 @@
     <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.AddCircle">
     Criar
     </MudButton>
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit">
+    <MudButton Variant="Variant.Filled" Style ="color: #BDBDBD; " StartIcon="@Icons.Material.Filled.Edit">
     Editar
     </MudButton>
     <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">
@@ -28,8 +27,9 @@
 </MudStack>
 </div>
 
- <MudTextField @bind-Value="Pesquisa" Placeholder="Pesquisar" Adornment="Adornment.Start" Immediate="true" Variant="Variant.Outlined"
-          AdornmentIcon="@Icons.Material.Filled.Search" Style="width:300px" IconSize="Size.Medium"></MudTextField>
+<MudPaper Class ="pa-6 mx-4 mt-6 rounded-xl" Elevation="1" Style="background: linear-gradient(135deg, #75a9e4, #0B3A6A, #042f42);" Dense="true" Fixed="false">
+    <MudTextField @bind-Value="Pesquisa" Placeholder="Pesquisar" Adornment="Adornment.Start" Immediate="true" Variant="Variant.Outlined"
+          AdornmentIcon="@Icons.Material.Filled.Search" Class ="px-4"Style="width:300px" IconSize="Size.Medium"></MudTextField>
 
 <MudDataGrid T="ItemEstoque" MultiSelection="true" Items="@Estoques" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@_quickFilter"
     Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged" Bordered="true" 
@@ -48,7 +48,7 @@
         <MudDataGridPager T="ItemEstoque" />
     </PagerContent>
 </MudDataGrid>
-
+</MudPaper>
 <div class="d-flex flex-wrap mt-4">
     <MudSwitch @bind-Value="@_sortNameByLength" Color="Color.Primary">Sort Name Column By Length</MudSwitch>
 </div>
