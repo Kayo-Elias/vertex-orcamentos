@@ -3,52 +3,71 @@
 
 <PageTitle>Vertex | Estoque</PageTitle>
 
-<div Row="true" class="d-flex  justify-space-between align-center mb-2">
-<div>
-    <MudText Typo="Typo.h6" Class ="px-9">
+<MudGrid Class="justify-start align-content-end" xxl="12" xl="6" lg="3" md="2">
+    
+    <MudText Typo="Typo.h6" Class="px-9" Style="color:#fcfcfc;">
     ESTOQUE
     </MudText>
-    
-    <MudText Typo="Typo.body1" Class="px-9" Style="color:#9fb3c8;">
+    <MudText Typo="Typo.body1" Class="px-9 align-bottom-" Style="color:#9fb3c8;">
     Gerencie e acompanhe os itens em estoque 
     </MudText>
-</div>
+</MudGrid>
 
-<MudStack Row="true" Spacing="2">
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.AddCircle">
+<MudGrid Class ="d-md-flex justify-end align-content-center  ml-n15"  Row="true" xxl="12" xl="6" lg="3" md="2">
+ <MudItem>     
+    <MudButton Variant="Variant.Filled" Color="Color.Success" StartIcon="@Icons.Material.Filled.AddCircle">
     Criar
     </MudButton>
-    <MudButton Variant="Variant.Filled" Style ="color: #BDBDBD; " StartIcon="@Icons.Material.Filled.Edit">
+</MudItem>
+<MudItem>
+    <MudButton Variant="Variant.Filled" Style ="color: #00cedd;" StartIcon="@Icons.Material.Filled.Edit">
     Editar
     </MudButton>
+</MudItem>
+<MudItem >
     <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">
     Excluir
     </MudButton>
-</MudStack>
-</div>
+</MudItem>
+</MudGrid>
 
-<MudPaper Class ="pa-6 mx-4 mt-6 rounded-xl" Elevation="1" Style="background: linear-gradient(135deg, #75a9e4, #0B3A6A, #042f42);" Dense="true" Fixed="false">
-    <MudTextField @bind-Value="Pesquisa" Placeholder="Pesquisar" Adornment="Adornment.Start" Immediate="true" Variant="Variant.Outlined"
-          AdornmentIcon="@Icons.Material.Filled.Search" Class ="px-4"Style="width:300px" IconSize="Size.Medium"></MudTextField>
-
-<MudDataGrid T="ItemEstoque" MultiSelection="true" Items="@Estoques" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@_quickFilter"
-    Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged" Bordered="true" 
-    Class="mud-theme-primary py-4 px-6 mx-4 mr-1 rounded-x3">
-
-    <Columns>
-        <SelectColumn T="ItemEstoque" Color="Color.Primary" />
-        <PropertyColumn Property="x => x.ID" Title="ID"/>
-        <PropertyColumn Property="x => x.Categoria" Title="Categoria"/>
-        <PropertyColumn Property="x => x.Nome" Title="Nome"/>
-        <PropertyColumn Property="x => x.Valor" Title="Valor unitário"/>
-        <PropertyColumn Property="x => x.Quantidade" Title="Estoque"/>
-    </Columns> 
+<MudPaper 
+    Class ="pa-6 mx-4 mt-6 rounded-xl border-2"
+    Elevation="1" 
+    Style="border: 2px solid #cdcdcf; background: linear-gradient(135deg, #75a9e4, #0B3A6A, #042f42);" 
+    Dense="true" 
+    Fixed="false">
     
-    <PagerContent>
-        <MudDataGridPager T="ItemEstoque" />
-    </PagerContent>
+    <MudTextField @bind-Value="Pesquisa" Placeholder="Pesquisar" Adornment="Adornment.Start" Immediate="true" Variant="Variant.Outlined"
+          AdornmentIcon="@Icons.Material.Filled.Search" Class ="px-4"Style=" color: #ffffff; width:300px" IconSize="Size.Medium"></MudTextField>
+
+<MudDataGrid T="ItemEstoque" 
+    MultiSelection="true" 
+    Items="@Estoques" 
+    SortMode="SortMode.Multiple" 
+    Filterable="true" 
+    QuickFilter="@_quickFilter"
+    Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged" Bordered="true"
+    Class="mud-theme-primary py-4 px-6 mx-4 mr-1 rounded-x3 border-4"
+    Style="border: 4px solid #cdcdcf;">
+
+<Columns>
+    <SelectColumn T="ItemEstoque" Color="Color.Black" />
+    <PropertyColumn Property="x => x.ID" Title="ID"/>
+    <PropertyColumn Property="x => x.Categoria" Title="Categoria"/>
+    <PropertyColumn Property="x => x.Nome" Title="Nome"/>
+    <PropertyColumn Property="x => x.Valor" Title="Valor unitário"/>
+    <PropertyColumn Property="x => x.Quantidade" Title="Estoque"/>
+</Columns> 
+    
+<PagerContent>
+    <MudDataGridPager T="ItemEstoque" />
+</PagerContent>
+
 </MudDataGrid>
+
 </MudPaper>
+
 <div class="d-flex flex-wrap mt-4">
     <MudSwitch @bind-Value="@_sortNameByLength" Color="Color.Primary">Sort Name Column By Length</MudSwitch>
 </div>
