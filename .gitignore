@@ -480,3 +480,12 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Reforço para o Visual Estudio e o .NET (Evitar que bin/obj subam)
+[Bb]in/
+[Oo]bj/
+bin/
+obj/
+.vs/
+.vscode/
+*.user
