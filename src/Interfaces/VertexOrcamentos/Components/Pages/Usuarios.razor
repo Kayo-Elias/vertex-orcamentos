@@ -1,0 +1,438 @@
+@page "/usuarios"
+
+<PageTitle>Vertex | Usuários</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.False" Class="usuarios-page">
+
+    <div class="usuarios-header">
+
+        <div>
+
+            <MudText Typo="Typo.h3" Class="title-text">
+                Usuários
+            </MudText>
+
+            <MudText Typo="Typo.body1" Class="subtitle-text">
+                Gerencie administradores e funcionários do sistema
+            </MudText>
+
+        </div>
+
+        <div class="header-buttons">
+
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.PersonAdd">
+
+                Criar Usuário
+
+            </MudButton>
+
+        </div>
+
+    </div>
+
+    <MudPaper Elevation="8" Class="usuarios-box" Style="overflow-x: auto;">
+
+        <MudTable Items="@usuarios"
+                  Hover="true"
+                  Striped="false"
+                  Bordered="false"
+                  Dense="false"
+                  Class="usuarios-table">
+
+            <HeaderContent>
+
+                <MudTh>Usuário</MudTh>
+
+                <MudTh Class="hide-mobile">Email</MudTh>
+
+                <MudTh>Permissão</MudTh>
+
+                <MudTh>Ações</MudTh>
+
+            </HeaderContent>
+
+            <RowTemplate>
+
+                <MudTr Class="custom-row">
+
+                    <MudTd>
+
+                        <div class="user-info">
+
+                            <MudAvatar Size="Size.Medium"
+                                       Color="Color.Primary">
+
+                                @context.Nome.Substring(0, 1)
+
+                            </MudAvatar>
+
+                            <div>
+
+                                <MudText Typo="Typo.body1">
+                                    @context.Nome
+                                </MudText>
+
+                                <MudText Typo="Typo.caption"
+                                         Class="user-id">
+
+                                    ID: @context.Id
+
+                                </MudText>
+
+                                <!-- Email visível só no mobile, abaixo do nome -->
+                                <MudText Typo="Typo.caption"
+                                         Class="user-email-mobile">
+
+                                    @context.Email
+
+                                </MudText>
+
+                            </div>
+
+                        </div>
+
+                    </MudTd>
+
+                    <MudTd Class="hide-mobile">
+                        @context.Email
+                    </MudTd>
+
+                    <MudTd>
+
+                        @if (context.Tipo == "Admin")
+                        {
+                            <MudChip T="string"
+                                     Color="Color.Error"
+                                     Variant="Variant.Filled"
+                                     Size="Size.Small">
+
+                                Administrador
+
+                            </MudChip>
+                        }
+                        else
+                        {
+                            <MudChip T="string"
+                                     Color="Color.Info"
+                                     Variant="Variant.Filled"
+                                     Size="Size.Small">
+
+                                Funcionário
+
+                            </MudChip>
+                        }
+
+                    </MudTd>
+
+                    <MudTd>
+
+                        @if (context.Tipo != "Admin")
+                        {
+                            <div class="acoes-area">
+
+                                <MudTooltip Text="Editar">
+
+                                    <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                                   Color="Color.Primary"
+                                                   Size="Size.Small"
+                                                   Class="action-btn" />
+
+                                </MudTooltip>
+
+                                <MudTooltip Text="Excluir">
+
+                                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                                   Color="Color.Error"
+                                                   Size="Size.Small"
+                                                   Class="action-btn" />
+
+                                </MudTooltip>
+
+                            </div>
+                        }
+                        else
+                        {
+                            <MudText Class="admin-text">
+                                Protegido
+                            </MudText>
+                        }
+
+                    </MudTd>
+
+                </MudTr>
+
+            </RowTemplate>
+
+        </MudTable>
+
+    </MudPaper>
+
+</MudContainer>
+
+<style>
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    overflow-x: hidden;
+}
+
+.usuarios-page {
+    min-height: 100vh;
+    padding: 40px;
+    background: linear-gradient(
+        135deg,
+        #071D36,
+        #0B3A6A,
+        #4FC3F7
+    );
+}
+
+.usuarios-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 35px;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.title-text {
+    color: white;
+    font-weight: 700;
+}
+
+.subtitle-text {
+    color: rgba(255,255,255,0.75);
+    margin-top: 6px;
+}
+
+.header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.usuarios-box {
+    background: rgba(18,56,92,0.88) !important;
+    backdrop-filter: blur(10px);
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+    overflow-x: auto;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-id {
+    color: rgba(255,255,255,0.55);
+}
+
+/* Email visível só no mobile */
+.user-email-mobile {
+    display: none;
+    color: rgba(255,255,255,0.6);
+    margin-top: 2px;
+}
+
+.acoes-area {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.custom-row {
+    transition: 0.2s;
+}
+
+.custom-row:hover {
+    background-color: rgba(255,255,255,0.06) !important;
+}
+
+.action-btn {
+    transition: 0.2s;
+    border-radius: 10px;
+}
+
+.action-btn:hover {
+    transform: scale(1.12);
+    background-color: rgba(255,255,255,0.08);
+}
+
+.admin-text {
+    color: rgba(255,255,255,0.5);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.mud-table {
+    background: transparent !important;
+}
+
+.mud-table-head th {
+    color: white !important;
+    font-size: 15px;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    white-space: nowrap;
+}
+
+.mud-table-body td {
+    color: white !important;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.mud-button-filled-primary {
+    background-color: #3B82F6 !important;
+    color: white !important;
+}
+
+.mud-avatar {
+    background: #3B82F6 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+/* ── TABLET (até 900px) ── */
+@@media (max-width: 900px) {
+
+    .usuarios-page {
+        padding: 20px;
+    }
+
+    .usuarios-header {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 24px;
+    }
+
+    .header-buttons {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .usuarios-box {
+        padding: 12px;
+        border-radius: 14px;
+    }
+
+    /* Esconde coluna de email — aparece abaixo do nome */
+    .hide-mobile {
+        display: none !important;
+    }
+
+    .user-email-mobile {
+        display: block;
+    }
+
+    .title-text {
+        font-size: 1.8rem !important;
+    }
+}
+
+/* ── MOBILE (até 480px) ── */
+@@media (max-width: 480px) {
+
+    .usuarios-page {
+        padding: 12px;
+    }
+
+    .usuarios-header {
+        margin-bottom: 16px;
+        gap: 12px;
+    }
+
+    .title-text {
+        font-size: 1.5rem !important;
+    }
+
+    .subtitle-text {
+        font-size: 13px !important;
+    }
+
+    .usuarios-box {
+        padding: 8px;
+        border-radius: 12px;
+    }
+
+    .user-info {
+        gap: 10px;
+    }
+
+    .mud-avatar {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 14px !important;
+        min-width: 36px !important;
+    }
+
+    .mud-table-head th {
+        font-size: 13px !important;
+        padding: 8px 6px !important;
+    }
+
+    .mud-table-body td {
+        font-size: 13px !important;
+        padding: 8px 6px !important;
+    }
+
+    .admin-text {
+        font-size: 12px;
+    }
+
+    .acoes-area {
+        gap: 2px;
+    }
+}
+
+</style>
+
+@code {
+
+    public class Usuario
+    {
+        public int Id { get; set; }
+
+        public string Nome { get; set; } = string.Empty;
+
+        public string Email { get; set; } = string.Empty;
+
+        public string Tipo { get; set; } = string.Empty;
+    }
+
+    private List<Usuario> usuarios = new()
+    {
+        new Usuario
+        {
+            Id = 1,
+            Nome = "João Pedro",
+            Email = "joao@vertex.com",
+            Tipo = "Admin"
+        },
+
+        new Usuario
+        {
+            Id = 2,
+            Nome = "Carlos Silva",
+            Email = "carlos@vertex.com",
+            Tipo = "Funcionario"
+        },
+
+        new Usuario
+        {
+            Id = 3,
+            Nome = "Marcos Lima",
+            Email = "marcos@vertex.com",
+            Tipo = "Funcionario"
+        }
+    };
+
+}

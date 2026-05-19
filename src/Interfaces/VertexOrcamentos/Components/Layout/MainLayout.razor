@@ -2,41 +2,137 @@
 
 <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
 <MudPopoverProvider />
-<MudLayout>
-    <MudAppBar Class= "d-flex" Style="background: linear-gradient(135deg, #071D36, #0B3A6A, #4FC3F7);" Dense="true" Fixed="false">
 
-    <MudStack Class="d-flex justify-start align-content-start">
-         <MudLink Href="/">
-         <MudImage Fluid="true" Src="images/logo.png" Width="150" Height="56" Alt="Logo" Class="rounded-lg" />
-        </MudLink>
-    </MudStack>
-    <MudStack Row="true" Class="d-flex justify-content align-center" Spacing="3">
-        <MudButton Variant="Variant.Text" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.Description" Class="px-4 mr-2" Href="orcamentos">
-         Orçamentos
-         </MudButton>
-         <MudButton Variant="Variant.Text" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.People" Class="px-4 mr-2" Href="clientes">
-         Clientes
-         </MudButton>
-        <MudButton Variant="Variant.Text" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.Warehouse" Class="px-4 mr-2" Href="estoque">
-         Estoque
-        </MudButton>
-    </MudStack>
-        <MudSpacer/>
-        <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Person" Size="Size.Small"/>
+<MudLayout>
+
+    <MudAppBar Class="d-flex"
+               Color="Color.Primary"
+               Dense="true"
+               Fixed="false">
+
+        <!-- LOGO -->
+        <MudStack Class="d-flex justify-start align-content-start">
+
+            <MudLink Href="/">
+
+                <MudImage Fluid="true"
+                          Src="images/logo.png"
+                          Width="150"
+                          Height="56"
+                          Alt="Logo"
+                          Class="rounded-lg" />
+
+            </MudLink>
+
+        </MudStack>
+
+        <!-- MENU -->
+        <MudStack Row="true"
+                  Class="d-flex justify-content align-center"
+                  Spacing="3">
+
+            <MudButton Variant="Variant.Text"
+                       Color="Color.Tertiary"
+                       StartIcon="@Icons.Material.Filled.Description"
+                       Class="px-4 mr-2"
+                       Href="orcamentos">
+
+                Orçamentos
+
+            </MudButton>
+
+            <MudButton Variant="Variant.Text"
+                       Color="Color.Tertiary"
+                       StartIcon="@Icons.Material.Filled.People"
+                       Class="px-4 mr-2"
+                       Href="clientes">
+
+                Clientes
+
+            </MudButton>
+
+            <MudButton Variant="Variant.Text"
+                       Color="Color.Tertiary"
+                       StartIcon="@Icons.Material.Filled.Warehouse"
+                       Class="px-4 mr-2"
+                       Href="estoque">
+
+                Estoque
+
+            </MudButton>
+
+            <MudButton Variant="Variant.Text"
+                       Color="Color.Tertiary"
+                       StartIcon="@Icons.Material.Filled.AdminPanelSettings"
+                       Class="px-4 mr-2"
+                       Href="usuarios">
+
+                Usuários
+
+            </MudButton>
+
+        </MudStack>
+
+        <MudSpacer />
+
+        <!-- PERFIL -->
+        <MudMenu ActivationEvent="@MouseEvent.LeftClick"
+                 AnchorOrigin="Origin.BottomRight"
+                 TransformOrigin="Origin.TopRight">
+
+            <ActivatorContent>
+
+                <MudIconButton Icon="@Icons.Material.Filled.Person"
+                               Color="Color.Inherit"
+                               Size="Size.Medium" />
+
+            </ActivatorContent>
+
+            <ChildContent>
+
+                <MudMenuItem Disabled="true">
+
+                    João Admin
+
+                </MudMenuItem>
+
+                <MudDivider />
+
+                <MudMenuItem StartIcon="@Icons.Material.Filled.Logout">
+
+                    Sair
+
+                </MudMenuItem>
+
+            </ChildContent>
+
+        </MudMenu>
+
     </MudAppBar>
+
+    <!-- CONTEÚDO -->
     <MudMainContent Class="pt-16 pa-4">
+
         @Body
+
     </MudMainContent>
+
 </MudLayout>
 
 <div id="blazor-error-ui" data-nosnippet>
+
     An unhandled error has occurred.
+
     <a href="." class="reload">Reload</a>
+
     <span class="dismiss">🗙</span>
+
 </div>
 
 @code {
+
     private bool _isDarkMode = true;
+
     private MudTheme? _theme = null;
 
     protected override void OnInitialized()
@@ -58,7 +154,6 @@
 
     private readonly PaletteLight _lightPalette = new()
     {
-
         Black = "#1C1C1C",
         AppbarText = "#424242",
         AppbarBackground = "rgba(255,255,255,0.8)",
@@ -104,5 +199,4 @@
         false => Icons.Material.Outlined.DarkMode,
     };
 }
-
 
