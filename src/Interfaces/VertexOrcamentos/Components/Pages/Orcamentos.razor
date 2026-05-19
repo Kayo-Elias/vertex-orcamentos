@@ -1,0 +1,567 @@
+@page "/orcamentos"
+@inject IJSRuntime JS
+
+<PageTitle>Vertex | Orçamentos</PageTitle>
+
+<style>
+    @@media print {
+        body * { visibility: hidden !important; }
+        #print-area, #print-area * { visibility: visible !important; }
+        #print-area {
+            position: fixed !important;
+            left: 0; top: 0;
+            width: 100%;
+            background: white !important;
+            color: black !important;
+            font-family: 'Segoe UI', sans-serif;
+            padding: 32px 40px;
+            box-sizing: border-box;
+        }
+    }
+</style>
+
+<div id="print-area" style="display:none;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; border-bottom:2px solid #111; padding-bottom:16px;">
+        <div>
+            <div style="font-size:22px; font-weight:700; color:#111; letter-spacing:-0.5px;">VERTEX</div>
+            <div style="font-size:11px; color:#666; margin-top:2px;">Sistema de Gestão</div>
+        </div>
+        <div style="text-align:right;">
+            <div style="font-size:18px; font-weight:700; color:#111;">ORÇAMENTO</div>
+            <div style="font-size:13px; color:#444; margin-top:2px;">Nº @cabecalho.Id</div>
+            <div style="font-size:11px; color:#888;">Data: @DateTime.Now.ToString("dd/MM/yyyy")</div>
+        </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:24px;">
+        <div style="border:1px solid #ddd; border-radius:6px; padding:14px;">
+            <div style="font-size:10px; font-weight:700; color:#888; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px;">Dados do Cliente</div>
+            <div style="font-size:14px; font-weight:600; color:#111;">@cabecalho.ClienteNome</div>
+            @if (!string.IsNullOrWhiteSpace(cabecalho.ClienteCpfCnpj))
+            {
+                <div style="font-size:12px; color:#555; margin-top:2px;">CPF/CNPJ: @cabecalho.ClienteCpfCnpj</div>
+            }
+            @if (!string.IsNullOrWhiteSpace(cabecalho.ClienteTelefone))
+            {
+                <div style="font-size:12px; color:#555;">Tel: @cabecalho.ClienteTelefone</div>
+            }
+            @if (!string.IsNullOrWhiteSpace(cabecalho.ClienteEmail))
+            {
+                <div style="font-size:12px; color:#555;">@cabecalho.ClienteEmail</div>
+            }
+        </div>
+        <div style="border:1px solid #ddd; border-radius:6px; padding:14px;">
+            <div style="font-size:10px; font-weight:700; color:#888; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px;">Informações do Orçamento</div>
+            <div style="font-size:12px; color:#555;">Vendedor: <span style="color:#111; font-weight:500;">@cabecalho.Vendedor</span></div>
+            <div style="font-size:12px; color:#555; margin-top:3px;">Validade: <span style="color:#111; font-weight:500;">@cabecalho.Validade dias</span></div>
+            <div style="font-size:12px; color:#555; margin-top:3px;">Condição: <span style="color:#111; font-weight:500;">@cabecalho.CondicaoPagamento</span></div>
+        </div>
+    </div>
+
+    <table style="width:100%; border-collapse:collapse; margin-bottom:24px; font-size:12px;">
+        <thead>
+            <tr style="background:#111; color:white;">
+                <th style="padding:10px 12px; text-align:left; font-weight:600;">#</th>
+                <th style="padding:10px 12px; text-align:left; font-weight:600;">Produto / Descrição</th>
+                <th style="padding:10px 12px; text-align:center; font-weight:600;">Qtd.</th>
+                <th style="padding:10px 12px; text-align:center; font-weight:600;">Un.</th>
+                <th style="padding:10px 12px; text-align:right; font-weight:600;">Vlr. Unit.</th>
+                <th style="padding:10px 12px; text-align:right; font-weight:600;">Desc. %</th>
+                <th style="padding:10px 12px; text-align:right; font-weight:600;">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < itens.Count; i++)
+            {
+                var item = itens[i];
+                var idx = i;
+                <tr style="border-bottom:1px solid #eee; @(idx % 2 == 0 ? "background:#fafafa;" : "background:white;")">
+                    <td style="padding:9px 12px; color:#888;">@(idx + 1)</td>
+                    <td style="padding:9px 12px;">
+                        <div style="font-weight:600; color:#111;">@item.ProdutoNome</div>
+                        @if (!string.IsNullOrWhiteSpace(item.Observacao))
+                        {
+                            <div style="font-size:11px; color:#888; margin-top:1px;">@item.Observacao</div>
+                        }
+                    </td>
+                    <td style="padding:9px 12px; text-align:center;">@item.Quantidade</td>
+                    <td style="padding:9px 12px; text-align:center; color:#888;">@item.Unidade</td>
+                    <td style="padding:9px 12px; text-align:right;">@item.ValorUnitario.ToString("C")</td>
+                    <td style="padding:9px 12px; text-align:right; color:#888;">@item.Desconto%</td>
+                    <td style="padding:9px 12px; text-align:right; font-weight:600;">@item.TotalItem.ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div style="display:flex; justify-content:flex-end; margin-bottom:24px;">
+        <div style="min-width:260px;">
+            <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee; font-size:13px;">
+                <span style="color:#555;">Subtotal:</span>
+                <span style="font-weight:500;">@Subtotal.ToString("C")</span>
+            </div>
+            @if (TotalDesconto > 0)
+            {
+                <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee; font-size:13px;">
+                    <span style="color:#555;">Desconto total:</span>
+                    <span style="color:#b91c1c; font-weight:500;">- @TotalDesconto.ToString("C")</span>
+                </div>
+            }
+            @if (cabecalho.Frete > 0)
+            {
+                <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee; font-size:13px;">
+                    <span style="color:#555;">Frete:</span>
+                    <span style="font-weight:500;">@cabecalho.Frete.ToString("C")</span>
+                </div>
+            }
+            <div style="display:flex; justify-content:space-between; padding:10px 0; border-top:2px solid #111; margin-top:4px;">
+                <span style="font-size:15px; font-weight:700; color:#111;">TOTAL:</span>
+                <span style="font-size:18px; font-weight:700; color:#111;">@TotalGeral.ToString("C")</span>
+            </div>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(cabecalho.Observacoes))
+    {
+        <div style="border:1px solid #ddd; border-radius:6px; padding:14px; margin-bottom:24px;">
+            <div style="font-size:10px; font-weight:700; color:#888; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px;">Observações</div>
+            <div style="font-size:12px; color:#444; white-space:pre-line;">@cabecalho.Observacoes</div>
+        </div>
+    }
+
+    <div style="border-top:1px solid #eee; padding-top:16px; font-size:11px; color:#aaa; text-align:center;">
+        Orçamento válido por @cabecalho.Validade dias a partir da data de emissão. · Gerado pelo sistema Vertex.
+    </div>
+</div>
+
+<MudPaper Class="pa-4" Elevation="0" Style="background-color: transparent;">
+
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-4">
+        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+            <MudText Typo="Typo.overline" Style="color:#64748B; font-weight:700; letter-spacing:0.08em; font-size:11px;">
+                Orçamentos
+            </MudText>
+            <MudChip T="string" Size="Size.Small"
+                     Style="background:#1E293B; color:#64748B; font-family:monospace; font-size:12px;">
+                @cabecalho.Id
+            </MudChip>
+        </MudStack>
+
+        <MudStack Row="true" Spacing="1">
+            <MudButton Variant="Variant.Filled" Color="Color.Success"
+                       StartIcon="@Icons.Material.Filled.Add"
+                       Style="border-radius:10px; font-weight:600; font-size:13px;"
+                       OnClick="@NovoOrcamento">Novo</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Save"
+                       Style="border-radius:10px; font-weight:600; font-size:13px; color:white;"
+                       OnClick="@SalvarOrcamento">Salvar</MudButton>
+            <MudButton Variant="Variant.Filled"
+                       StartIcon="@Icons.Material.Filled.Print"
+                       Style="border-radius:10px; font-weight:600; font-size:13px; background:#0F172A; color:white;"
+                       OnClick="@ImprimirOrcamento">Imprimir</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Error"
+                       StartIcon="@Icons.Material.Filled.Delete"
+                       Style="border-radius:10px; font-weight:600; font-size:13px;"
+                       OnClick="@CancelarOrcamento">Cancelar</MudButton>
+        </MudStack>
+    </MudStack>
+
+    <MudGrid Class="mb-4" Spacing="2">
+        <MudItem xs="6" sm="3">
+            <MudPaper Class="pa-3" Elevation="0" Style="background:#111827; border-radius:12px; border:0.5px solid #1E293B;">
+                <MudText Typo="Typo.caption" Style="color:#64748B; display:block;">Orçamentos criados</MudText>
+                <MudText Typo="Typo.h5" Style="font-weight:700; color:white;">@orcamentosCriados</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <MudPaper Class="pa-3" Elevation="0" Style="background:#111827; border-radius:12px; border:0.5px solid #1E293B;">
+                <MudText Typo="Typo.caption" Style="color:#64748B; display:block;">Produtos no estoque</MudText>
+                <MudText Typo="Typo.h5" Style="font-weight:700; color:#22C55E;">@produtosEstoque.Count</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <MudPaper Class="pa-3" Elevation="0" Style="background:#111827; border-radius:12px; border:0.5px solid #1E293B;">
+                <MudText Typo="Typo.caption" Style="color:#64748B; display:block;">Itens no orçamento</MudText>
+                <MudText Typo="Typo.h5" Style="font-weight:700; color:#FACC15;">@itens.Count</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <MudPaper Class="pa-3" Elevation="0" Style="background:#111827; border-radius:12px; border:0.5px solid #1E293B;">
+                <MudText Typo="Typo.caption" Style="color:#64748B; display:block;">Total geral</MudText>
+                <MudText Typo="Typo.h5" Style="font-weight:700; color:#22C55E;">@TotalGeral.ToString("C")</MudText>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    <MudGrid Spacing="3">
+
+        <MudItem xs="12" md="8">
+
+            <MudPaper Class="pa-5 mb-4" Elevation="0" Style="background:#111827; border-radius:16px; border:0.5px solid #1E293B;">
+                <MudText Typo="Typo.overline" Style="color:#64748B; font-weight:700; letter-spacing:0.06em; display:block; margin-bottom:12px;">
+                    Cabeçalho
+                </MudText>
+                <MudGrid Spacing="2">
+                    <MudItem xs="12" sm="6">
+                        <MudTextField T="string" Label="ID do orçamento" Variant="Variant.Outlined" Margin="Margin.Dense"
+                                      @bind-Value="cabecalho.Id" FullWidth="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField T="string" Label="Vendedor" Variant="Variant.Outlined" Margin="Margin.Dense"
+                                      @bind-Value="cabecalho.Vendedor" FullWidth="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField T="string" Label="Nome do cliente" Variant="Variant.Outlined" Margin="Margin.Dense"
+                                      @bind-Value="cabecalho.ClienteNome" FullWidth="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField T="string" Label="CPF / CNPJ" Variant="Variant.Outlined" Margin="Margin.Dense"
+                                      @bind-Value="cabecalho.ClienteCpfCnpj" FullWidth="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField T="string" Label="Telefone" Variant="Variant.Outlined" Margin="Margin.Dense"
+                                      @bind-Value="cabecalho.ClienteTelefone" FullWidth="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField T="string" Label="E-mail" Variant="Variant.Outlined" Margin="Margin.Dense"
+                                      @bind-Value="cabecalho.ClienteEmail" FullWidth="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="4">
+                        <MudTextField T="string" Label="Condição de pagamento" Variant="Variant.Outlined" Margin="Margin.Dense"
+                                      @bind-Value="cabecalho.CondicaoPagamento" FullWidth="true" />
+                    </MudItem>
+                    <MudItem xs="6" sm="4">
+                        <MudNumericField T="int" Label="Validade (dias)" Variant="Variant.Outlined" Margin="Margin.Dense"
+                                      @bind-Value="cabecalho.Validade" FullWidth="true" Min="1" />
+                    </MudItem>
+                    <MudItem xs="6" sm="4">
+                        <MudNumericField T="double" Label="Frete (R$)" Variant="Variant.Outlined" Margin="Margin.Dense"
+                                      @bind-Value="cabecalho.Frete" FullWidth="true" Min="0" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField T="string" Label="Observações gerais" Variant="Variant.Outlined" Margin="Margin.Dense"
+                                      @bind-Value="cabecalho.Observacoes" FullWidth="true" Lines="2" />
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+
+            <MudPaper Class="pa-5 mb-4" Elevation="0" Style="background:#111827; border-radius:16px; border:0.5px solid #1E293B;">
+                <MudText Typo="Typo.overline" Style="color:#64748B; font-weight:700; letter-spacing:0.06em; display:block; margin-bottom:12px;">
+                    Adicionar produto
+                </MudText>
+                <MudGrid Spacing="2" Class="align-center">
+                    <MudItem xs="12" sm="4">
+                        <MudSelect T="string" Label="Produto do estoque" Variant="Variant.Outlined" Margin="Margin.Dense"
+                                   Value="@novoItem.ProdutoId"
+                                   ValueChanged="@OnProdutoSelecionado"
+                                   FullWidth="true">
+                            @foreach (var p in produtosEstoque)
+                            {
+                                <MudSelectItem Value="@p.Id">@p.Nome</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="6" sm="2">
+                        <MudNumericField T="int" Label="Qtd." Variant="Variant.Outlined" Margin="Margin.Dense"
+                                      @bind-Value="novoItem.Quantidade" FullWidth="true" Min="1" />
+                    </MudItem>
+                    <MudItem xs="6" sm="2">
+                        <MudNumericField T="double" Label="Desc. %" Variant="Variant.Outlined" Margin="Margin.Dense"
+                                      @bind-Value="novoItem.Desconto" FullWidth="true" Min="0" Max="100" />
+                    </MudItem>
+                    <MudItem xs="12" sm="4">
+                        <MudTextField T="string" Label="Observação do item" Variant="Variant.Outlined" Margin="Margin.Dense"
+                                      @bind-Value="novoItem.Observacao" FullWidth="true" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudButton Variant="Variant.Filled" Color="Color.Success"
+                                   StartIcon="@Icons.Material.Filled.AddShoppingCart"
+                                   Style="border-radius:10px; font-weight:600;"
+                                   OnClick="@AdicionarItem" FullWidth="true">
+                            Adicionar produto à lista
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+
+            <MudPaper Class="pa-5" Elevation="0" Style="background:#111827; border-radius:16px; border:0.5px solid #1E293B;">
+                <MudText Typo="Typo.overline" Style="color:#64748B; font-weight:700; letter-spacing:0.06em; display:block; margin-bottom:12px;">
+                    Itens do orçamento (@itens.Count)
+                </MudText>
+
+                @if (itens.Count == 0)
+                {
+                    <div style="text-align:center; padding:40px 0; color:#334155;">
+                        <MudIcon Icon="@Icons.Material.Filled.Inventory2" Style="font-size:48px; color:#1E293B;" />
+                        <MudText Style="color:#334155; margin-top:8px;">Nenhum produto adicionado ainda.</MudText>
+                    </div>
+                }
+                else
+                {
+                    <MudTable Items="@itens" Dense="true" Hover="true" Style="background:transparent;">
+                        <HeaderContent>
+                            <MudTh Style="background:#0D1117; color:#64748B; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em;">#</MudTh>
+                            <MudTh Style="background:#0D1117; color:#64748B; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em;">Produto</MudTh>
+                            <MudTh Style="background:#0D1117; color:#64748B; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; text-align:center;">Qtd.</MudTh>
+                            <MudTh Style="background:#0D1117; color:#64748B; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em;">Un.</MudTh>
+                            <MudTh Style="background:#0D1117; color:#64748B; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; text-align:right;">Unit.</MudTh>
+                            <MudTh Style="background:#0D1117; color:#64748B; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; text-align:right;">Desc.%</MudTh>
+                            <MudTh Style="background:#0D1117; color:#64748B; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; text-align:right;">Total</MudTh>
+                            <MudTh Style="background:#0D1117;"></MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd Style="color:#64748B; font-size:12px;">@(itens.IndexOf(context) + 1)</MudTd>
+                            <MudTd>
+                                <MudText Typo="Typo.body2" Style="font-weight:600; color:#E2E8F0;">@context.ProdutoNome</MudText>
+                                @if (!string.IsNullOrWhiteSpace(context.Observacao))
+                                {
+                                    <MudText Typo="Typo.caption" Style="color:#64748B;">@context.Observacao</MudText>
+                                }
+                            </MudTd>
+                            <MudTd Style="text-align:center;">
+                                <MudNumericField T="int" @bind-Value="context.Quantidade"
+                                                 Min="1" Variant="Variant.Outlined" Margin="Margin.Dense"
+                                                 Style="max-width:70px; font-size:13px; margin:auto;" />
+                            </MudTd>
+                            <MudTd Style="color:#64748B; font-size:13px;">@context.Unidade</MudTd>
+                            <MudTd Style="text-align:right; color:#94A3B8; font-size:13px;">@context.ValorUnitario.ToString("C")</MudTd>
+                            <MudTd Style="text-align:right; color:#FACC15; font-size:13px;">@context.Desconto%</MudTd>
+                            <MudTd Style="text-align:right; font-weight:700; color:#22C55E; font-size:13px;">@context.TotalItem.ToString("C")</MudTd>
+                            <MudTd>
+                                <MudIconButton Icon="@Icons.Material.Filled.DeleteOutline"
+                                               Color="Color.Error" Size="Size.Small"
+                                               OnClick="@(() => RemoverItem(context))" />
+                            </MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+            </MudPaper>
+
+        </MudItem>
+
+        <MudItem xs="12" md="4">
+            <MudPaper Class="pa-5" Elevation="0" Style="background:#111827; border-radius:16px; border:0.5px solid #1E293B; position:sticky; top:16px;">
+
+                <MudText Typo="Typo.overline" Style="color:#64748B; font-weight:700; letter-spacing:0.06em; display:block; margin-bottom:14px;">
+                    Resumo financeiro
+                </MudText>
+
+                @if (!string.IsNullOrWhiteSpace(cabecalho.ClienteNome))
+                {
+                    <div style="background:#0D1117; border-radius:10px; padding:12px 14px; margin-bottom:14px; border:0.5px solid #1E293B;">
+                        <MudText Typo="Typo.caption" Style="color:#64748B; display:block; margin-bottom:4px;">Cliente</MudText>
+                        <MudText Typo="Typo.body2" Style="font-weight:600; color:#E2E8F0;">@cabecalho.ClienteNome</MudText>
+                        @if (!string.IsNullOrWhiteSpace(cabecalho.ClienteTelefone))
+                        {
+                            <MudText Typo="Typo.caption" Style="color:#64748B;">@cabecalho.ClienteTelefone</MudText>
+                        }
+                    </div>
+                }
+
+                @if (itens.Count > 0)
+                {
+                    <div style="margin-bottom:14px;">
+                        @foreach (var item in itens)
+                        {
+                            <div style="display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:0.5px solid #1E293B;">
+                                <div>
+                                    <MudText Typo="Typo.caption" Style="color:#E2E8F0; font-weight:500; display:block;">@item.ProdutoNome</MudText>
+                                    <MudText Typo="Typo.caption" Style="color:#64748B;">@item.Quantidade x @item.ValorUnitario.ToString("C")</MudText>
+                                </div>
+                                <MudText Typo="Typo.caption" Style="color:#22C55E; font-weight:700;">@item.TotalItem.ToString("C")</MudText>
+                            </div>
+                        }
+                    </div>
+                }
+
+                <div style="border-top:0.5px solid #334155; padding-top:12px;">
+                    <div style="display:flex; justify-content:space-between; padding:5px 0;">
+                        <MudText Typo="Typo.body2" Style="color:#64748B;">Subtotal</MudText>
+                        <MudText Typo="Typo.body2" Style="color:#E2E8F0;">@Subtotal.ToString("C")</MudText>
+                    </div>
+                    @if (TotalDesconto > 0)
+                    {
+                        <div style="display:flex; justify-content:space-between; padding:5px 0;">
+                            <MudText Typo="Typo.body2" Style="color:#64748B;">Descontos</MudText>
+                            <MudText Typo="Typo.body2" Style="color:#EF4444;">- @TotalDesconto.ToString("C")</MudText>
+                        </div>
+                    }
+                    @if (cabecalho.Frete > 0)
+                    {
+                        <div style="display:flex; justify-content:space-between; padding:5px 0;">
+                            <MudText Typo="Typo.body2" Style="color:#64748B;">Frete</MudText>
+                            <MudText Typo="Typo.body2" Style="color:#E2E8F0;">@cabecalho.Frete.ToString("C")</MudText>
+                        </div>
+                    }
+                </div>
+
+                <div style="background:#0D1117; border-radius:10px; padding:14px; border:0.5px solid #1E293B; margin-top:12px;">
+                    <MudText Typo="Typo.caption" Style="color:#64748B;">Total do orçamento</MudText>
+                    <MudText Typo="Typo.h4" Style="font-weight:700; color:#22C55E;">@TotalGeral.ToString("C")</MudText>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(cabecalho.CondicaoPagamento))
+                {
+                    <div style="margin-top:10px; padding:10px 14px; border-radius:10px; background:#0D1117; border:0.5px solid #1E293B;">
+                        <MudText Typo="Typo.caption" Style="color:#64748B; display:block;">Condição de pagamento</MudText>
+                        <MudText Typo="Typo.body2" Style="color:#E2E8F0;">@cabecalho.CondicaoPagamento</MudText>
+                    </div>
+                }
+
+                <MudButton Variant="Variant.Filled"
+                           StartIcon="@Icons.Material.Filled.Print"
+                           Style="border-radius:10px; font-weight:600; font-size:14px; background:#0F172A; color:white; margin-top:16px;"
+                           OnClick="@ImprimirOrcamento" FullWidth="true">
+                    Gerar / Imprimir PDF
+                </MudButton>
+
+            </MudPaper>
+        </MudItem>
+
+    </MudGrid>
+
+</MudPaper>
+
+@code {
+
+    private int orcamentosCriados = 4;
+
+    // ───── Cabeçalho ─────
+    private CabecalhoOrcamento cabecalho = new()
+    {
+        Id = "ORC-001",
+        Validade = 15,
+        CondicaoPagamento = "À vista"
+    };
+
+    // ───── Estoque de produtos ─────
+    private List<ProdutoEstoque> produtosEstoque = new()
+    {
+        new ProdutoEstoque { Id = "1", Categoria = "Eletrônicos", Nome = "Mouse Gamer", Valor = 100.00, Unidade = "un" },
+        new ProdutoEstoque { Id = "2", Categoria = "Eletrônicos", Nome = "Teclado Mecânico", Valor = 150.00, Unidade = "un" },
+        new ProdutoEstoque { Id = "3", Categoria = "Móveis",      Nome = "Cadeira Ergonômica", Valor = 250.00, Unidade = "un" },
+        new ProdutoEstoque { Id = "4", Categoria = "Eletrônicos", Nome = "Monitor 24\"", Valor = 899.00, Unidade = "un" },
+        new ProdutoEstoque { Id = "5", Categoria = "Periféricos", Nome = "Headset USB", Valor = 199.90, Unidade = "un" },
+    };
+
+    // ───── Lista de itens do orçamento ─────
+    private List<ItemOrcamento> itens = new();
+
+    // ───── Item sendo adicionado ─────
+    private ItemOrcamento novoItem = new() { Quantidade = 1 };
+
+    // ───── Calculados ─────
+    private double Subtotal       => itens.Sum(i => i.ValorUnitario * i.Quantidade);
+    private double TotalDesconto  => itens.Sum(i => i.ValorUnitario * i.Quantidade * i.Desconto / 100);
+    private double TotalGeral     => Subtotal - TotalDesconto + cabecalho.Frete;
+
+    // ───── Evento: produto selecionado no select ─────
+    private void OnProdutoSelecionado(string id)
+    {
+        novoItem.ProdutoId = id;
+        var p = produtosEstoque.FirstOrDefault(x => x.Id == id);
+        if (p is not null)
+        {
+            novoItem.ProdutoNome   = p.Nome;
+            novoItem.ValorUnitario = p.Valor;
+            novoItem.Unidade       = p.Unidade;
+        }
+    }
+
+    // ───── Adicionar item à lista ─────
+    private void AdicionarItem()
+    {
+        if (string.IsNullOrWhiteSpace(novoItem.ProdutoId)) return;
+
+        itens.Add(new ItemOrcamento
+        {
+            ProdutoId    = novoItem.ProdutoId,
+            ProdutoNome  = novoItem.ProdutoNome,
+            ValorUnitario= novoItem.ValorUnitario,
+            Quantidade   = novoItem.Quantidade,
+            Desconto     = novoItem.Desconto,
+            Unidade      = novoItem.Unidade,
+            Observacao   = novoItem.Observacao
+        });
+
+        novoItem = new ItemOrcamento { Quantidade = 1 };
+    }
+
+    // ───── Remover item ─────
+    private void RemoverItem(ItemOrcamento item) => itens.Remove(item);
+
+    // ───── Imprimir ─────
+    private async Task ImprimirOrcamento()
+    {
+        await JS.InvokeVoidAsync("eval", @"
+            document.getElementById('print-area').style.display = 'block';
+            window.print();
+            setTimeout(() => {
+                document.getElementById('print-area').style.display = 'none';
+            }, 1500);
+        ");
+    }
+
+    // ───── Novo orçamento ─────
+    private void NovoOrcamento()
+    {
+        cabecalho = new CabecalhoOrcamento
+        {
+            Id = $"ORC-{DateTime.Now:yyyyMMddHHmmss}",
+            Validade = 15,
+            CondicaoPagamento = "À vista"
+        };
+        itens.Clear();
+        novoItem = new ItemOrcamento { Quantidade = 1 };
+    }
+
+    // ───── Salvar ─────
+    private void SalvarOrcamento()
+    {
+        if (!string.IsNullOrWhiteSpace(cabecalho.ClienteNome) && itens.Count > 0)
+            orcamentosCriados++;
+    }
+
+    // ───── Cancelar ─────
+    private void CancelarOrcamento() => NovoOrcamento();
+
+    // ═══════════════════════════════════
+    // MODELOS
+    // ═══════════════════════════════════
+
+    public class CabecalhoOrcamento
+    {
+        public string Id                { get; set; } = string.Empty;
+        public string Vendedor          { get; set; } = string.Empty;
+        public string ClienteNome       { get; set; } = string.Empty;
+        public string ClienteCpfCnpj    { get; set; } = string.Empty;
+        public string ClienteTelefone   { get; set; } = string.Empty;
+        public string ClienteEmail      { get; set; } = string.Empty;
+        public string CondicaoPagamento { get; set; } = string.Empty;
+        public int    Validade          { get; set; } = 15;
+        public double Frete             { get; set; }
+        public string Observacoes       { get; set; } = string.Empty;
+    }
+
+    public class ProdutoEstoque
+    {
+        public string Id        { get; set; } = string.Empty;
+        public string Categoria { get; set; } = string.Empty;
+        public string Nome      { get; set; } = string.Empty;
+        public double Valor     { get; set; }
+        public string Unidade   { get; set; } = "un";
+    }
+
+    public class ItemOrcamento
+    {
+        public string ProdutoId    { get; set; } = string.Empty;
+        public string ProdutoNome  { get; set; } = string.Empty;
+        public string Unidade      { get; set; } = "un";
+        public int    Quantidade   { get; set; } = 1;
+        public double ValorUnitario{ get; set; }
+        public double Desconto     { get; set; }
+        public string Observacao   { get; set; } = string.Empty;
+        public double TotalItem    => ValorUnitario * Quantidade * (1 - Desconto / 100);
+    }
+}
