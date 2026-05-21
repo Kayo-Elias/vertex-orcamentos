@@ -59,7 +59,7 @@
                   Style="background:#111827; border-radius:16px;">
 
             <MudText Typo="Typo.body2" Style="color:#94A3B8;">
-                Total de Produtos em esotuqe
+                Total de Produtos em Estoque
             </MudText>
 
             <MudText Typo="Typo.h4" Style="font-weight:700; color:white;">
@@ -99,6 +99,21 @@
         </MudPaper>
     </MudItem>
 
+    <MudItem xs="12" sm="6" md="3">
+        <MudPaper Class="pa-4"
+                  Style="background:#111827; border-radius:16px;">
+
+            <MudText Typo="Typo.body2" Style="color:#94A3B8;">
+                Valor Total em Estoque
+            </MudText>
+
+            <MudText Typo="Typo.h4" Style="font-weight:700; color:#3B82F6;">
+                R$ 45.320,00
+            </MudText>
+
+        </MudPaper>
+    </MudItem>
+
 
 </MudGrid>
 
@@ -112,7 +127,7 @@
           AlignItems="AlignItems.Center">
 
         <MudTextField T="string"
-                      Placeholder="Pesquisar cliente"
+                      Placeholder="Pesquisar produto"
                       Variant="Variant.Outlined"
                       Adornment="Adornment.Start"
                       AdornmentIcon="@Icons.Material.Filled.Search"
@@ -160,9 +175,9 @@
 
     public class Cliente
     {
-        public string Id { get; set; }
-        public string Categoria { get; set; }
-        public string Nome { get; set; }
+        public string? Id { get; set; }
+        public string? Categoria { get; set; }
+        public string? Nome { get; set; }
         public double Valor { get; set; }
         public int Quantidade { get; set; }
     }

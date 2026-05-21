@@ -31,6 +31,7 @@
                   Class="d-flex justify-content align-center"
                   Spacing="3">
 
+            <!-- ORÇAMENTOS -->
             <MudButton Variant="Variant.Text"
                        Color="Color.Tertiary"
                        StartIcon="@Icons.Material.Filled.Description"
@@ -41,6 +42,7 @@
 
             </MudButton>
 
+            <!-- CLIENTES -->
             <MudButton Variant="Variant.Text"
                        Color="Color.Tertiary"
                        StartIcon="@Icons.Material.Filled.People"
@@ -51,6 +53,7 @@
 
             </MudButton>
 
+            <!-- ESTOQUE -->
             <MudButton Variant="Variant.Text"
                        Color="Color.Tertiary"
                        StartIcon="@Icons.Material.Filled.Warehouse"
@@ -61,6 +64,7 @@
 
             </MudButton>
 
+            <!-- USUÁRIOS -->
             <MudButton Variant="Variant.Text"
                        Color="Color.Tertiary"
                        StartIcon="@Icons.Material.Filled.AdminPanelSettings"
@@ -68,6 +72,17 @@
                        Href="usuarios">
 
                 Usuários
+
+            </MudButton>
+
+            <!-- RELATÓRIOS -->
+            <MudButton Variant="Variant.Text"
+                       Color="Color.Tertiary"
+                       StartIcon="@Icons.Material.Filled.BarChart"
+                       Class="px-4 mr-2"
+                       Href="relatorios">
+
+                Relatórios
 
             </MudButton>
 
@@ -98,7 +113,9 @@
 
                 <MudDivider />
 
-                <MudMenuItem StartIcon="@Icons.Material.Filled.Logout">
+                <MudMenuItem Icon="@Icons.Material.Filled.Logout"
+                             IconColor="Color.Error"
+                             Href="/logout">
 
                     Sair
 
@@ -199,4 +216,5 @@
         false => Icons.Material.Outlined.DarkMode,
     };
 }
+
 

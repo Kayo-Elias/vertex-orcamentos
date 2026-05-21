@@ -1,0 +1,478 @@
+@page "/relatorios"
+
+<PageTitle>Vertex | Relatórios</PageTitle>
+
+<div class="relatorios-page">
+
+    <!-- HEADER -->
+
+    <div class="header-area">
+
+        <div>
+
+            <MudText Typo="Typo.h2" Class="title">
+                Central de Relatórios
+            </MudText>
+
+            <MudText Typo="Typo.subtitle1" Class="subtitle">
+                Gere análises estratégicas e acompanhe o desempenho operacional do sistema
+            </MudText>
+
+        </div>
+
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   StartIcon="@Icons.Material.Filled.Download">
+
+            Exportar Relatório
+
+        </MudButton>
+
+    </div>
+
+    <!-- RELATORIOS RAPIDOS -->
+
+    <MudGrid>
+
+        <MudItem xs="12" md="3">
+
+            <MudPaper Class="report-card">
+
+                <MudIcon Icon="@Icons.Material.Filled.Inventory2"
+                         Size="Size.Large"
+                         Class="report-icon" />
+
+                <MudText Typo="Typo.h6" Class="report-title">
+                    Estoque Crítico
+                </MudText>
+
+                <MudText Class="report-text">
+                    Produtos com quantidade baixa ou zerada
+                </MudText>
+
+                <MudButton Variant="Variant.Text"
+                           Color="Color.Info">
+
+                    Gerar relatório
+
+                </MudButton>
+
+            </MudPaper>
+
+        </MudItem>
+
+        <MudItem xs="12" md="3">
+
+            <MudPaper Class="report-card">
+
+                <MudIcon Icon="@Icons.Material.Filled.WarningAmber"
+                         Size="Size.Large"
+                         Class="report-icon warning" />
+
+                <MudText Typo="Typo.h6" Class="report-title">
+                    Produtos Parados
+                </MudText>
+
+                <MudText Class="report-text">
+                    Itens sem movimentação recente
+                </MudText>
+
+                <MudButton Variant="Variant.Text"
+                           Color="Color.Warning">
+
+                    Gerar relatório
+
+                </MudButton>
+
+            </MudPaper>
+
+        </MudItem>
+
+        <MudItem xs="12" md="3">
+
+            <MudPaper Class="report-card">
+
+                <MudIcon Icon="@Icons.Material.Filled.Schedule"
+                         Size="Size.Large"
+                         Class="report-icon success" />
+
+                <MudText Typo="Typo.h6" Class="report-title">
+                    Horários de Pico
+                </MudText>
+
+                <MudText Class="report-text">
+                    Períodos com maior fluxo de vendas
+                </MudText>
+
+                <MudButton Variant="Variant.Text"
+                           Color="Color.Success">
+
+                    Gerar relatório
+
+                </MudButton>
+
+            </MudPaper>
+
+        </MudItem>
+
+        <MudItem xs="12" md="3">
+
+            <MudPaper Class="report-card">
+
+                <MudIcon Icon="@Icons.Material.Filled.Assessment"
+                         Size="Size.Large"
+                         Class="report-icon danger" />
+
+                <MudText Typo="Typo.h6" Class="report-title">
+                    Desempenho Geral
+                </MudText>
+
+                <MudText Class="report-text">
+                    Eficiência operacional do sistema
+                </MudText>
+
+                <MudButton Variant="Variant.Text"
+                           Color="Color.Error">
+
+                    Gerar relatório
+
+                </MudButton>
+
+            </MudPaper>
+
+        </MudItem>
+
+    </MudGrid>
+
+    <!-- ANALISES -->
+
+    <MudGrid Class="mt-4">
+
+        <MudItem xs="12" md="6">
+
+            <MudPaper Class="analysis-box">
+
+                <MudText Typo="Typo.h5" Class="section-title">
+                    Produtos com Baixa Saída
+                </MudText>
+
+                <div class="analysis-item">
+                    <span>Mouse Gamer RGB</span>
+
+                    <MudChip T="string" Color="Color.Warning">
+                        3 vendas
+                    </MudChip>
+                </div>
+
+                <div class="analysis-item">
+                    <span>Teclado Mecânico</span>
+
+                    <MudChip T="string" Color="Color.Warning">
+                        2 vendas
+                    </MudChip>
+                </div>
+
+                <div class="analysis-item">
+                    <span>Headset Pro X</span>
+
+                    <MudChip T="string" Color="Color.Error">
+                        Sem vendas
+                    </MudChip>
+                </div>
+
+            </MudPaper>
+
+        </MudItem>
+
+        <MudItem xs="12" md="6">
+
+            <MudPaper Class="analysis-box">
+
+                <MudText Typo="Typo.h5" Class="section-title">
+                    Produtos Mais Vendidos
+                </MudText>
+
+                <div class="analysis-item">
+                    <span>Mouse Office</span>
+
+                    <MudChip T="string" Color="Color.Success">
+                        128 vendas
+                    </MudChip>
+                </div>
+
+                <div class="analysis-item">
+                    <span>Notebook Dell</span>
+
+                    <MudChip T="string" Color="Color.Success">
+                        96 vendas
+                    </MudChip>
+                </div>
+
+                <div class="analysis-item">
+                    <span>Monitor LG</span>
+
+                    <MudChip T="string" Color="Color.Info">
+                        74 vendas
+                    </MudChip>
+                </div>
+
+            </MudPaper>
+
+        </MudItem>
+
+    </MudGrid>
+
+    <!-- ALERTAS -->
+
+    <MudPaper Class="alerts-box mt-4">
+
+        <MudText Typo="Typo.h5" Class="section-title">
+            Alertas Inteligentes
+        </MudText>
+
+        <div class="alert-item">
+
+            <MudIcon Icon="@Icons.Material.Filled.Warning"
+                     Color="Color.Warning" />
+
+            <span>
+                5 produtos estão próximos de acabar no estoque
+            </span>
+
+        </div>
+
+        <div class="alert-item">
+
+            <MudIcon Icon="@Icons.Material.Filled.Error"
+                     Color="Color.Error" />
+
+            <span>
+                Produto “Notebook Acer” está sem movimentação há 30 dias
+            </span>
+
+        </div>
+
+        <div class="alert-item">
+
+            <MudIcon Icon="@Icons.Material.Filled.Info"
+                     Color="Color.Info" />
+
+            <span>
+                Pico de vendas identificado entre 18h e 21h
+            </span>
+
+        </div>
+
+    </MudPaper>
+
+    <!-- RESUMO OPERACIONAL -->
+
+    <MudPaper Class="summary-box mt-4">
+
+        <MudText Typo="Typo.h5" Class="section-title">
+            Resumo Operacional
+        </MudText>
+
+        <MudGrid>
+
+            <MudItem xs="12" md="4">
+
+                <div class="summary-card">
+
+                    <MudIcon Icon="@Icons.Material.Filled.AccessTime"
+                             Color="Color.Info"
+                             Size="Size.Large" />
+
+                    <MudText Class="summary-number">
+                        18 min
+                    </MudText>
+
+                    <MudText Class="summary-label">
+                        Tempo médio de atendimento
+                    </MudText>
+
+                </div>
+
+            </MudItem>
+
+            <MudItem xs="12" md="4">
+
+                <div class="summary-card">
+
+                    <MudIcon Icon="@Icons.Material.Filled.Inventory"
+                             Color="Color.Warning"
+                             Size="Size.Large" />
+
+                    <MudText Class="summary-number">
+                        8
+                    </MudText>
+
+                    <MudText Class="summary-label">
+                        Produtos em falta
+                    </MudText>
+
+                </div>
+
+            </MudItem>
+
+            <MudItem xs="12" md="4">
+
+                <div class="summary-card">
+
+                    <MudIcon Icon="@Icons.Material.Filled.DoneAll"
+                             Color="Color.Success"
+                             Size="Size.Large" />
+
+                    <MudText Class="summary-number">
+                        96%
+                    </MudText>
+
+                    <MudText Class="summary-label">
+                        Eficiência operacional
+                    </MudText>
+
+                </div>
+
+            </MudItem>
+
+        </MudGrid>
+
+    </MudPaper>
+
+</div>
+
+<style>
+
+.relatorios-page {
+
+    padding: 20px;
+    min-height: 100vh;
+    background-color: #000C18;
+}
+
+.header-area {
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.title {
+
+    color: white;
+    font-weight: 700;
+}
+
+.subtitle {
+
+    color: rgba(255,255,255,0.7);
+}
+
+.report-card {
+
+    background: linear-gradient(135deg, #071D36, #12385C) !important;
+    border-radius: 18px;
+    padding: 25px;
+    transition: 0.25s;
+    height: 100%;
+}
+
+.report-card:hover {
+
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.report-icon {
+
+    color: #4FC3F7;
+    margin-bottom: 15px;
+}
+
+.warning {
+
+    color: #FFC107;
+}
+
+.success {
+
+    color: #00E676;
+}
+
+.danger {
+
+    color: #FF4D6D;
+}
+
+.report-title {
+
+    color: white;
+    margin-bottom: 10px;
+}
+
+.report-text {
+
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 20px;
+}
+
+.analysis-box,
+.alerts-box,
+.summary-box {
+
+    background: #071D36 !important;
+    border-radius: 18px;
+    padding: 25px;
+}
+
+.section-title {
+
+    color: white;
+    margin-bottom: 20px;
+}
+
+.analysis-item {
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    color: white;
+}
+
+.alert-item {
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.summary-card {
+
+    background: rgba(255,255,255,0.03);
+    border-radius: 16px;
+    padding: 25px;
+    text-align: center;
+}
+
+.summary-number {
+
+    color: white;
+    font-size: 34px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.summary-label {
+
+    color: rgba(255,255,255,0.7);
+}
+
+</style>
