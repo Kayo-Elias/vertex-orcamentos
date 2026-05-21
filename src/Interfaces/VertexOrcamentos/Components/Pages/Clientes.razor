@@ -1,23 +1,17 @@
 @page "/clientes";
+@using VertexOrcamentos.Components.Shared
 
 <PageTitle>Vertex | Clientes</PageTitle>
 
-<MudPaper Class="pa-6" Elevation="0" Style="background-color: transparent;">
+<!-- Cabecalho -->
 
-<div Row="true" class="d-flex justify-space-between align-center mb-1">
-</div> 
-    
- 
-<MudText Typo="Typo.h3"
-         Style="font-weight:700; color:white;">
-    Clientes
-</MudText>
+<PageHeader
+    Titulo="Clientes"
+    Subtitulo="Gerencie e acompanhe o cadastro dos clientes" 
+    Imagem="https://www.dabusarquitetura.com.br/blog/wp-content/uploads/2024/02/como-receber-cliente-escritorio.png"
+    ImagemPosicao="center 100"/>
 
-<MudText Typo="Typo.body1"
-         Style="color:#94A3B8; margin-bottom:80px;">
-    Gerencie e acompanhe o cadastro dos clientes
-</MudText>
-
+<!-- botoes de criar, editar e excluir -->
 
 <MudStack Row="true"
           Spacing="2"
@@ -28,7 +22,7 @@
         Variant="Variant.Filled"
         Color="Color.Success"
         StartIcon="@Icons.Material.Filled.Add"
-        Style="border-radius:12px; font-weight:600;">
+        Style="border-radius:12px; font-weight:800;">
         Criar
     </MudButton>
 
@@ -36,7 +30,7 @@
         Variant="Variant.Filled"
         Color="Color.Primary"
         StartIcon="@Icons.Material.Filled.Edit"
-        Style="border-radius:12px; font-weight:600; color:white;">
+        Style="border-radius:12px; font-weight:800; color:white;">
         Editar
     </MudButton>
     
@@ -44,13 +38,13 @@
         Variant="Variant.Filled"
         Color="Color.Error"
         StartIcon="@Icons.Material.Filled.Delete"
-        Style="border-radius:12px; font-weight:600;">
+        Style="border-radius:12px; font-weight:800;">
         Excluir
     </MudButton>
 
 </MudStack>
 
-
+<!-- cards de resumo, dashboards -->
 
 <MudGrid Class="mt-2 mb-4">
 
@@ -116,6 +110,8 @@
 
 </MudGrid>
 
+<!-- pesquisa e botao de buscar -->
+
 <MudPaper Class="pa-4 pa-sm-6"
           Elevation="0"
           Style="background-color:#111927; border-radius:16px;">
@@ -135,43 +131,239 @@
         <MudButton Variant="Variant.Filled"
            Color="Color.Primary"
            FullWidth="true"
-           Style="border-radius: 10px;">
+           Style="border-radius: 12px; font-weight:800; color:white;">
             Buscar
         </MudButton>
 
     </MudStack>
 
 </MudPaper>
+
+<!-- tabela -->
+
+<MudPaper Class="usuarios-box">
+
 <MudTable Items="@clientes"
           Hover="true"
-          Striped="true"
-          Dense="true"
-          Breakpoint="Breakpoint.Sm"
-          Class="mt-4">
+          Striped="false"
+          Bordered="false"
+          Dense="false"
+          Class="usuarios-table">
 
     <HeaderContent>
-        <MudTh>Nome</MudTh>
-        <MudTh>Email</MudTh>
+
+        <MudTh>Cliente</MudTh>
+
+        <MudTh Class="hide-mobile">Email</MudTh>
+
         <MudTh>Telefone</MudTh>
+
         <MudTh>Status</MudTh>
+
+        <MudTh>Ações</MudTh>
+
     </HeaderContent>
 
     <RowTemplate>
-        <MudTd>@context.Nome</MudTd>
-        <MudTd>@context.Email</MudTd>
-        <MudTd>@context.Telefone</MudTd>
 
-        <MudTd>
-           <MudChip T="string"
-         Color="Color.Success">
-    Ativo
-</MudChip>
-        </MudTd>
+        <MudTr Class="custom-row">
+
+            <!-- Cliente (com avatar estilo usuários) -->
+            <MudTd>
+
+                <div class="user-info">
+
+                    <MudAvatar Size="Size.Medium"
+                               Color="Color.Primary">
+
+                        @context.Nome.Substring(0, 1)
+
+                    </MudAvatar>
+
+                    <div>
+
+                        <MudText Typo="Typo.body1">
+                            @context.Nome
+                        </MudText>
+
+                        <MudText Typo="Typo.caption"
+                                 Class="user-id">
+
+                            Cliente
+
+                        </MudText>
+
+                        <!-- Email mobile -->
+                        <MudText Typo="Typo.caption"
+                                 Class="user-email-mobile">
+
+                            @context.Email
+
+                        </MudText>
+
+                    </div>
+
+                </div>
+
+            </MudTd>
+
+            <!-- Email desktop -->
+            <MudTd Class="hide-mobile">
+                @context.Email
+            </MudTd>
+
+            <!-- Telefone -->
+            <MudTd>
+                @context.Telefone
+            </MudTd>
+
+            <!-- Status -->
+           <MudTd>
+
+    <MudChip T="string"
+             Color="Color.Success"
+             Variant="Variant.Filled"
+             Size="Size.Small">
+
+        Ativo
+
+    </MudChip>
+
+</MudTd>
+
+            <!-- Ações -->
+            <MudTd>
+
+                <div class="acoes-area">
+
+                    <MudTooltip Text="Editar">
+
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                       Color="Color.Default"
+                                       Style="color: #42A5F5;"
+                                       Size="Size.Small"
+                                       Class="action-btn" />
+
+                    </MudTooltip>
+
+                    <MudTooltip Text="Excluir">
+
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                       Color="Color.Error"
+                                       Size="Size.Small"
+                                       Class="action-btn" />
+
+                    </MudTooltip>
+
+                </div>
+
+            </MudTd>
+
+        </MudTr>
+
     </RowTemplate>
 
 </MudTable>
 
 </MudPaper>
+
+<!-- estilo da tabela -->
+
+<style>
+
+.usuarios-box {
+    background: rgba(18,56,92,0.88) !important;
+    backdrop-filter: blur(10px);
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 8px 30px rgba(78, 107, 120, 0.44);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-id {
+    color: rgba(255,255,255,0.55);
+}
+
+.custom-row {
+    transition: 0.2s;
+}
+
+.custom-row:hover {
+    background-color: rgba(255, 255, 255, 0) !important;
+}
+
+.acoes-area {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.action-btn {
+    transition: 0.2s;
+    border-radius: 10px;
+}
+
+.action-btn:hover {
+    transform: scale(1.1);
+    background-color: rgba(236, 173, 173, 0.08);
+}
+
+.mud-table {
+    background: rgba(22, 57, 109, 0.5) !important;
+}
+
+.mud-table-head th {
+    color: white !important;
+    font-size: 15px;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(151, 179, 190, 0.48);
+}
+
+.mud-table-body td {
+    color: white !important;
+    border-bottom: 1px solid rgba(151, 179, 190, 0.48);
+}
+
+.mud-avatar {
+    background: #3B82F6 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.user-email-mobile {
+    color: rgba(255,255,255,0.55);
+}
+
+.hide-mobile {
+    display: table-cell;
+}
+
+@@media (max-width: 768px) {
+
+    .hide-mobile {
+        display: none;
+    }
+
+    .user-info {
+        gap: 10px;
+    }
+
+    .mud-table-body td,
+    .mud-table-head th {
+        font-size: 13px;
+    }
+}
+
+.custom-row:hover {
+    background-color: rgba(255,255,255,0.06) !important;
+}
+
+</style>
 
 @code {
 

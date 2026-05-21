@@ -1,0 +1,84 @@
+<MudPaper Class="page-header pa-8 mb-6" Elevation="0" Style="@($"background-position: {ImagemPosicao};")">
+
+    <MudText Typo="Typo.h3"
+             Class="header-title">
+
+        @Titulo
+
+    </MudText>
+
+    <MudText Typo="Typo.body1"
+             Class="header-subtitle">
+
+        @Subtitulo
+
+    </MudText>
+
+</MudPaper>
+
+@code {
+
+    [Parameter]
+    public string Titulo { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Subtitulo { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Imagem { get; set; } = string.Empty;
+
+    [Parameter] public string ImagemPosicao { get; set; } = "center";
+
+    
+}
+
+<style>
+
+.page-header {
+
+    background:
+        linear-gradient(
+            to right,
+            rgba(11,18,32,0.92),
+            rgba(56,189,248,0.45)
+        ),
+
+        url('@Imagem');
+
+    background-size: cover;
+
+    background-position: center 100%;
+
+    border-radius: 24px;
+
+    min-height: 220px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    box-shadow: 0 8px 30px rgba(0,0,0,0.30);
+}
+
+.header-title {
+
+    color: white;
+
+    font-weight: 900;
+
+    margin-bottom: 12px;
+}
+
+.header-subtitle {
+
+    color: rgba(255,255,255,0.80);
+
+    font-size: 20px;
+
+    max-width: 700px;
+
+    line-height: 1.5;
+}
+</style>

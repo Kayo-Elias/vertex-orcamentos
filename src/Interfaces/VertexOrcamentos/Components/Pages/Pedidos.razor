@@ -1,153 +1,179 @@
-@page "/estoque";
+@page "/pedidos"
 @using VertexOrcamentos.Components.Shared
 
-<PageTitle>Vertex | Estoque</PageTitle>
+<PageTitle>Vertex | Pedidos</PageTitle>
 
 <!-- titulo -->
 
 <PageHeader
-    Titulo="Estoque"
-    Subtitulo="Gerencie e acompanhe o estoque da empresa de forma prática e organizada." 
-    Imagem="https://www.shutterstock.com/image-photo/business-analyst-managing-data-infrastructure-600nw-2740363657.jpg"
-    ImagemPosicao="center 53%"/>
-<!-- botoes de criar, editar e excluir -->
-
-<MudStack Row="true"
-          Spacing="2"
-          Wrap="Wrap.Wrap"
-          Class="mb-6">
-
-    <MudButton
-        Variant="Variant.Filled"
-        Color="Color.Success"
-        StartIcon="@Icons.Material.Filled.Add"
-        Style="border-radius:12px; font-weight:800;">
-        Criar
-    </MudButton>
-
-    <MudButton 
-        Variant="Variant.Filled"
-        Color="Color.Primary"
-        StartIcon="@Icons.Material.Filled.Edit"
-        Style="border-radius:12px; font-weight:800; color:white;">
-        Editar
-    </MudButton>
+    Titulo="Pedidos & Vendas"
+    Subtitulo="Gerencie os pedidos e acompanhe o status das vendas" 
+    Imagem="https://www.shutterstock.com/image-photo/female-business-leader-utilizing-crm-260nw-2688700893.jpg"
+    ImagemPosicao="center 55%"/>
     
-    <MudButton 
-        Variant="Variant.Filled"
-        Color="Color.Error"
-        StartIcon="@Icons.Material.Filled.Delete"
-        Style="border-radius:12px; font-weight:800;">
-        Excluir
-    </MudButton>
 
-</MudStack>
+    
+
 
 <!-- cards de resumo -->
 
-<MudGrid Class="mt-2 mb-4">
+ <MudGrid Class="mt-2 mb-4" Spacing="3">
 
     <MudItem xs="12" sm="6" md="3">
+
         <MudPaper Class="pa-4"
+                  Elevation="0"
                   Style="background:#111827; border-radius:16px;">
 
             <MudText Typo="Typo.body2" Style="color:#94A3B8;">
-<<<<<<< Updated upstream
-                Total de Produtos em Estoque
-=======
-                Total de Produtos em estouqe
->>>>>>> Stashed changes
+                Total de Pedidos
             </MudText>
 
-            <MudText Typo="Typo.h4" Style="font-weight:700; color:white;">
+            <MudText Typo="Typo.h4"
+                     Style="font-weight:700; color:white;">
+
                 128
+
             </MudText>
 
         </MudPaper>
+
     </MudItem>
 
     <MudItem xs="12" sm="6" md="3">
+
         <MudPaper Class="pa-4"
+                  Elevation="0"
                   Style="background:#111827; border-radius:16px;">
 
             <MudText Typo="Typo.body2" Style="color:#94A3B8;">
-                Produtos Ativos
+                Pagos
             </MudText>
 
-            <MudText Typo="Typo.h4" Style="font-weight:700; color:#22C55E;">
+            <MudText Typo="Typo.h4"
+                     Style="font-weight:700; color:#22C55E;">
+
                 98
+
             </MudText>
 
         </MudPaper>
+
     </MudItem>
 
     <MudItem xs="12" sm="6" md="3">
+
         <MudPaper Class="pa-4"
+                  Elevation="0"
                   Style="background:#111827; border-radius:16px;">
 
             <MudText Typo="Typo.body2" Style="color:#94A3B8;">
-                Produtos com baixo estoque
+                Pendentes
             </MudText>
 
-            <MudText Typo="Typo.h4" Style="font-weight:700; color:#FACC15;">
+            <MudText Typo="Typo.h4"
+                     Style="font-weight:700; color:#FACC15;">
+
                 12
+
             </MudText>
 
         </MudPaper>
+
     </MudItem>
 
     <MudItem xs="12" sm="6" md="3">
+
         <MudPaper Class="pa-4"
+                  Elevation="0"
                   Style="background:#111827; border-radius:16px;">
 
             <MudText Typo="Typo.body2" Style="color:#94A3B8;">
-                Valor Total em Estoque
+                Cancelados
             </MudText>
 
-            <MudText Typo="Typo.h4" Style="font-weight:700; color:#3B82F6;">
-                R$ 45.320,00
+            <MudText Typo="Typo.h4"
+                     Style="font-weight:700; color:#EF4444;">
+
+                18
+
             </MudText>
 
         </MudPaper>
-    </MudItem>
 
+    </MudItem>
 
 </MudGrid>
 
-<!-- pesquisa e botao de buscar -->
+<!-- barra de pesquisas, filtros e botao de novo pedido -->
 
 <MudPaper Class="pa-4 pa-sm-6"
           Elevation="0"
           Style="background-color:#111927; border-radius:16px;">
 
-    <MudStack Row="true"
-          Spacing="2"
-          Wrap="Wrap.Wrap"
-          AlignItems="AlignItems.Center">
+    <MudGrid Spacing="2">
+
+    <MudItem xs="12" md="4">
 
         <MudTextField T="string"
-                      Placeholder="Pesquisar produto"
-                      Variant="Variant.Outlined"
-                      Adornment="Adornment.Start"
-                      AdornmentIcon="@Icons.Material.Filled.Search"
-                      FullWidth="true" />
+              Placeholder="Pesquisar pedido"
+              Variant="Variant.Outlined"
+              Adornment="Adornment.Start"
+              AdornmentIcon="@Icons.Material.Filled.Search"
+              Style="border-radius:14px;"
+              Margin="Margin.Dense" />
+                      
+    </MudItem>
 
-        <MudButton Variant="Variant.Filled"
+    <MudItem xs="12" md="3">
+
+       <MudSelect T="string"
+           Label="Status"
+           Variant="Variant.Outlined"
+           Style="border-radius:14px;"
+           Margin="Margin.Dense">
+
+           <MudSelectItem Value='"Pago"'>Pago</MudSelectItem>
+           <MudSelectItem Value='"Pendente"'>Pendente</MudSelectItem>
+           <MudSelectItem Value='"Cancelado"'>Cancelado</MudSelectItem>
+
+        </MudSelect>
+
+    </MudItem>
+
+    <MudItem xs="12" md="3">
+
+       <MudDatePicker Label="Data"
+               Variant="Variant.Outlined"
+               Style="border-radius:14px;"
+               Margin="Margin.Dense" />
+
+    </MudItem>
+
+    <MudItem xs="12" md="2" Class="d-flex align-center">
+
+       <MudButton Variant="Variant.Filled"
            Color="Color.Primary"
+           StartIcon="@Icons.Material.Filled.Add"
            FullWidth="true"
-           Style="border-radius: 12px; font-weight:800; color:white;">
-            Buscar  
+           Style="border-radius:12px; height:40px;">
+
+            Novo Pedido
+
         </MudButton>
 
-    </MudStack>
+    </MudItem>
 
-  </MudPaper>
+</MudGrid>
+</MudPaper>
 
-  <!-- tabela -->
+<!-- tabela -->
 
-<MudPaper Class="usuarios-box">
+<MudPaper Elevation="8"
+          Class="usuarios-box"
+          Style="overflow-x:auto;">
 
-    <MudTable Items="@clientes"
+    <MudTable Items="@pedidos"
               Hover="true"
               Striped="false"
               Bordered="false"
@@ -156,15 +182,11 @@
 
         <HeaderContent>
 
-            <MudTh>ID</MudTh>
-
-            <MudTh>Categoria</MudTh>
-
-            <MudTh>Nome</MudTh>
+            <MudTh>Pedido</MudTh>
 
             <MudTh>Valor</MudTh>
 
-            <MudTh>Quantidade</MudTh>
+            <MudTh>Status</MudTh>
 
             <MudTh>Ações</MudTh>
 
@@ -174,7 +196,7 @@
 
             <MudTr Class="custom-row">
 
-                <!-- ID -->
+                <!-- PEDIDO -->
                 <MudTd>
 
                     <div class="user-info">
@@ -182,20 +204,20 @@
                         <MudAvatar Size="Size.Medium"
                                    Color="Color.Primary">
 
-                            @context.Nome.Substring(0,1)
+                            @context.Cliente.Substring(0,1)
 
                         </MudAvatar>
 
                         <div>
 
                             <MudText Typo="Typo.body1">
-                                #@context.Id
+                                @context.Cliente
                             </MudText>
 
                             <MudText Typo="Typo.caption"
                                      Class="user-id">
 
-                                Produto em estoque
+                                Pedido #@context.Id
 
                             </MudText>
 
@@ -205,43 +227,33 @@
 
                 </MudTd>
 
-                <!-- Categoria -->
-                <MudTd>
-                    @context.Categoria
-                </MudTd>
-
-                <!-- Nome -->
-                <MudTd>
-                    @context.Nome
-                </MudTd>
-
-                <!-- Valor -->
+                <!-- VALOR -->
                 <MudTd>
 
                     <MudText Typo="Typo.body1"
                              Style="font-weight:600;">
 
-                        R$ @context.Valor
+                        R$ @context.Valor.ToString("N2")
 
                     </MudText>
 
                 </MudTd>
 
-                <!-- Quantidade -->
+                <!-- STATUS -->
                 <MudTd>
 
                     <MudChip T="string"
-                             Color="Color.Info"
+                             Color="@GetStatusColor(context.Status)"
                              Variant="Variant.Filled"
                              Size="Size.Small">
 
-                        @context.Quantidade unidades
+                        @context.Status
 
                     </MudChip>
 
                 </MudTd>
 
-                <!-- Ações -->
+                <!-- AÇÕES -->
                 <MudTd>
 
                     <div class="acoes-area">
@@ -249,12 +261,12 @@
                         <MudTooltip Text="Editar">
 
                             <MudIconButton Icon="@Icons.Material.Filled.Edit"
-                                           Color="Color.Default"
-                                           Style="color: #42A5F5;"
-                                           Size="Size.Small"
-                                           Class="action-btn" />
+                                                   Color="Color.Default"
+                                                   Style="color: #42A5F5;"
+                                                   Size="Size.Small"
+                                                   Class="action-btn" />
 
-                        </MudTooltip>
+                                </MudTooltip>
 
                         <MudTooltip Text="Excluir">
 
@@ -304,7 +316,7 @@
 }
 
 .custom-row:hover {
-    background-color: rgba(255,255,255,0.06) !important;
+    background-color: rgba(255, 255, 255, 0) !important;
 }
 
 .acoes-area {
@@ -345,49 +357,54 @@
     font-weight: bold;
 }
 
-@@media (max-width: 768px) {
-
-    .user-info {
-        gap: 10px;
-    }
-
-    .mud-table-body td,
-    .mud-table-head th {
-        font-size: 13px;
-    }
+.custom-row:hover {
+    background-color: rgba(255,255,255,0.06) !important;
 }
-
 </style>
 
 @code {
 
-    public class Cliente
+    private Color GetStatusColor(string status)
+{
+    return status switch
     {
-        public string? Id { get; set; }
-        public string? Categoria { get; set; }
-        public string? Nome { get; set; }
-        public double Valor { get; set; }
-        public int Quantidade { get; set; }
+        "Pago" => Color.Success,
+        "Pendente" => Color.Warning,
+        "Cancelado" => Color.Error,
+        _ => Color.Default
+    };
+}
+
+    public class Pedido
+    {
+        public int Id { get; set; }
+
+        public string Cliente { get; set; }
+
+        public decimal Valor { get; set; }
+
+        public string Status { get; set; }
     }
 
-    private List<Cliente> clientes = new()
+    private List<Pedido> pedidos = new()
     {
-        new Cliente
+        new Pedido
         {
-            Id = "1",
-            Categoria = "Eletrônicos",
-            Nome = "Mouse",
-            Valor = 100.00,
-            Quantidade = 10
+            Id = 1,
+            Cliente = "João",
+            Valor = 250,
+            Status = "Pago"
         },
 
-        new Cliente
+        new Pedido
         {
-            Id = "2",
-            Categoria = "Eletrônicos",
-            Nome = "Mouse",
-            Valor = 150.00,
-            Quantidade = 5
+            Id = 2,
+            Cliente = "Maria",
+            Valor = 500,
+            Status = "Pendente"
         }
     };
 }
+
+
+

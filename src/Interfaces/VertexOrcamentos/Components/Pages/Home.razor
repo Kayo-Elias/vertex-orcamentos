@@ -1,59 +1,578 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Vertex | Home</PageTitle>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Hello, world!</MudText>
-<MudText Class="mb-8">Welcome to your new app, powered by MudBlazor and the .NET 10 Template!</MudText>
+<MudContainer MaxWidth="MaxWidth.False" Class="pa-6">
 
-<MudAlert Severity="Severity.Normal" ContentAlignment="HorizontalAlignment.Start">
-    You can find documentation and examples on our website here:
-    <MudLink Href="https://mudblazor.com" Target="_blank" Typo="Typo.body2" Color="Color.Primary">
-        <b>www.mudblazor.com</b>
-    </MudLink>
-</MudAlert>
+<MudPaper Class="hero-box pa-8 mb-6" Elevation="0"> 
 
-<br />
-<MudText Typo="Typo.h5" GutterBottom="true">Interactivity in this Template</MudText>
-<br />
-<MudText Typo="Typo.body2">
-    When you opt for the "Global" Interactivity Location, <br />
-    the render modes are defined in App.razor and consequently apply to all child components.<br />
-    In this case, providers are globally set in the MainLayout.<br />
-    <br />
-    On the other hand, if you choose the "Per page/component" Interactivity Location,<br />
-    it is necessary to include the <br />
-    <br />
-    &lt;MudPopoverProvider /&gt; <br />
-    &lt;MudDialogProvider /&gt; <br />
-    &lt;MudSnackbarProvider /&gt; <br />
-    <br />
-    components on every interactive page.<br />
-    <br />
-    If a render mode is not specified for a page, it defaults to Server-Side Rendering (SSR),<br />
-    similar to this page. While MudBlazor allows pages to be rendered in SSR,<br />
-    please note that interactive features, such as buttons and dropdown menus, will not be functional.
+    <MudGrid AlignItems="AlignItems.Center">
+
+        <!-- ESQUERDA -->
+        <MudItem xs="12" md="7">
+
+            <!-- LOGO + NOME -->
+            <div class="vertex-brand">
+
+                <img src="images/logo.png"
+                     alt="Vertex Logo"
+                     class="vertex-logo" />
+
+            </div>
+
+            <!-- SUBTÍTULO -->
+            <MudText Typo="Typo.h5"
+                     Class="hero-subtitle-title">
+
+                Gestão inteligente para empresas modernas.
+
+            </MudText>
+
+            <!-- DESCRIÇÃO -->
+            <MudText Typo="Typo.body1"
+                     Class="hero-subtitle">
+
+                A Vertex ajuda empresas a controlar clientes,
+                pedidos, vendas e estoque em uma plataforma
+                moderna, intuitiva e eficiente.
+
+            </MudText>
+
+            <!-- BOTÃO -->
+            <MudStack Row="true"
+                      Spacing="2"
+                      Class="mt-10">
+
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Default"
+                           Style="border-radius:12px; background:#42A5F5; color:white; border-radius:12px;">
+
+                    Acessar Sistema
+
+                </MudButton>
+
+            </MudStack>
+
+        </MudItem>
+
+         <!-- DIREITA -->
+<MudItem xs="12"
+         md="5"
+         Class="hero-right">
+
+    <div class="hero-background">
+
+        <div class="gradient-circle circle-1"></div>
+
+        <div class="gradient-circle circle-2"></div>
+
+        <div class="dashboard-preview">
+
+            <div class="preview-card"></div>
+
+            <div class="preview-card small"></div>
+
+            <div class="preview-card"></div>
+
+        </div>
+
+    </div>
+ </MudItem>
+</MudGrid>
+</MudPaper>
+    <!-- about us -->
+    <MudPaper Class="section-box pa-6" Elevation="0">
+
+    <MudText Typo="Typo.overline" Class="section-overline">
+    Sobre a plataforma
 </MudText>
 
-<br />
-<MudText Typo="Typo.h5" GutterBottom="true">What's New in Blazor with the Release of .NET 10</MudText>
-<br />
+<MudText Typo="Typo.h4" Class="section-title mb-2">
+    Quem somos
+</MudText>
+   
+   
+    <MudText Class="section-text about-description mb-8">
+        A Vertex é uma plataforma criada para simplificar a gestão empresarial
+        através de uma experiência moderna, intuitiva e eficiente. Nosso objetivo
+        é ajudar empresas a organizarem seus processos, melhorarem o controle
+        interno e otimizarem resultados.
+    </MudText>
 
-<MudText Typo="Typo.h6" GutterBottom="true">Prerendering</MudText>
-<MudText Typo="Typo.body2" GutterBottom="true">
-    If you're exploring the features of .NET 10 Blazor,<br /> you might be pleasantly surprised to learn that each page is prerendered on the server,<br /> regardless of the selected render mode.<br /><br />
-    This means that you'll need to inject all necessary services on the server,<br /> even when opting for the wasm (WebAssembly) render mode.<br /><br />
-    This prerendering functionality is crucial to ensuring that WebAssembly mode feels fast and responsive,<br /> especially when it comes to initial page load times.<br /><br />
-    For more information on how to detect prerendering and leverage the RenderContext, you can refer to the following link:
-    <MudLink Href="https://github.com/dotnet/aspnetcore/issues/51468#issuecomment-1783568121" Target="_blank" Typo="Typo.body2" Color="Color.Primary">
-        More details
-    </MudLink>
+    <MudGrid Spacing="4">
+
+        <MudItem xs="12" md="4">
+            <div class="mvv-item">
+                <div class="mvv-icon-wrap">
+                    <MudIcon Icon="@Icons.Material.Filled.TrackChanges" Class="mvv-icon" />
+                </div>
+                
+                <MudText Typo="Typo.h6" Class="mvv-label">Missão</MudText>
+                <div class="mvv-line"></div>
+                <MudText Class="mvv-text">
+                    Tornar a gestão empresarial mais prática, organizada e acessível.
+                </MudText>
+            </div>
+        </MudItem>
+
+        <MudItem xs="12" md="4">
+            <div class="mvv-item">
+                <div class="mvv-icon-wrap">
+                    <MudIcon Icon="@Icons.Material.Filled.Visibility" Class="mvv-icon" />
+                </div>
+                
+                <MudText Typo="Typo.h6" Class="mvv-label">Visão</MudText>
+                <div class="mvv-line"></div>
+                <MudText Class="mvv-text">
+                    Ser referência em soluções modernas para gestão e produtividade empresarial.
+                </MudText>
+            </div>
+        </MudItem>
+
+        <MudItem xs="12" md="4">
+            <div class="mvv-item">
+                <div class="mvv-icon-wrap">
+                    <MudIcon Icon="@Icons.Material.Filled.Favorite" Class="mvv-icon" />
+                </div>
+                
+                <MudText Typo="Typo.h6" Class="mvv-label">Valores</MudText>
+                <div class="mvv-line"></div>
+                <MudText Class="mvv-text">
+                    Inovação, eficiência, organização e compromisso com a experiência do usuário.
+                </MudText>
+            </div>
+        </MudItem>
+
+    </MudGrid>
+
+</MudPaper>
+
+ <!-- funcionalidades -->
+
+<MudPaper Class="section-box pa-8 mb-8">
+
+    <MudText Typo="Typo.overline" Class="section-overline">
+    O que oferecemos
+    </MudText>
+<MudText Typo="Typo.h4" Class="section-title mb-2">
+Funcionalidades da Vertex
 </MudText>
 
-<br />
-<MudText Typo="Typo.h6" GutterBottom="true">InteractiveAuto</MudText>
-<MudText Typo="Typo.body2">
-    A discussion on how to achieve this can be found here:
-    <MudLink Href="https://github.com/dotnet/aspnetcore/issues/51468#issue-1950424116" Target="_blank" Typo="Typo.body2" Color="Color.Primary">
-        More details
-    </MudLink>
+    <MudText Typo="Typo.body1"
+             Class="section-text mb-6">
+
+        A Vertex oferece ferramentas modernas para facilitar
+        a gestão empresarial e otimizar processos internos.
+
+    </MudText>
+
+    <MudGrid Spacing="3">
+
+        <!-- clientes -->
+        <MudItem xs="12" sm="6" md="3">
+
+            <MudPaper Class="feature-card pa-5"
+                      Elevation="0">
+
+                <MudIcon Icon="@Icons.Material.Filled.People"
+                         Class="feature-icon" />
+
+                <MudText Typo="Typo.h6"
+                         Class="mt-4">
+
+                    Clientes
+
+                </MudText>
+
+                <MudText Class="feature-text">
+
+                    Cadastre, organize e acompanhe
+                    clientes ativos, pendentes
+                    e bloqueados.
+
+                </MudText>
+
+            </MudPaper>
+
+        </MudItem>
+
+        <!-- pedidos -->
+        <MudItem xs="12" sm="6" md="3">
+
+            <MudPaper Class="feature-card pa-5"
+                      Elevation="0">
+
+                <MudIcon Icon="@Icons.Material.Filled.ReceiptLong"
+                         Class="feature-icon" />
+
+                <MudText Typo="Typo.h6"
+                         Class="mt-4">
+
+                    Pedidos
+
+                </MudText>
+
+                <MudText Class="feature-text">
+
+                    Gerencie pedidos,
+                    acompanhe status
+                    e controle vendas.
+
+                </MudText>
+
+            </MudPaper>
+
+        </MudItem>
+
+        <!-- estoque -->
+        <MudItem xs="12" sm="6" md="3">
+
+            <MudPaper Class="feature-card pa-5"
+                      Elevation="0">
+
+                <MudIcon Icon="@Icons.Material.Filled.Inventory2"
+                         Class="feature-icon" />
+
+                <MudText Typo="Typo.h6"
+                         Class="mt-4">
+
+                    Estoque
+
+                </MudText>
+
+                <MudText Class="feature-text">
+
+                    Controle produtos,
+                    quantidades e organização
+                    do estoque.
+
+                </MudText>
+
+            </MudPaper>
+
+        </MudItem>
+
+        <!-- relatorios -->
+        <MudItem xs="12" sm="6" md="3">
+
+            <MudPaper Class="feature-card pa-5"
+                      Elevation="0">
+
+                <MudIcon Icon="@Icons.Material.Filled.Analytics"
+                         Class="feature-icon" />
+
+                <MudText Typo="Typo.h6"
+                         Class="mt-4">
+
+                    Relatórios
+
+                </MudText>
+
+                <MudText Class="feature-text">
+
+                    Visualize informações,
+                    métricas e dados importantes
+                    da empresa.
+
+                </MudText>
+
+            </MudPaper>
+
+        </MudItem>
+
+    </MudGrid>
+
+</MudPaper>
+
+<!-- contatos -->
+<MudPaper Class="section-box pa-8" Elevation="0">
+
+    <MudText Typo="Typo.overline" Class="section-overline">
+    Fale conosco!
+    </MudText>
+<MudText Typo="Typo.h4" Class="section-title mb-2">
+Contato
 </MudText>
+
+    <MudDivider Class="contact-divider mb-6" />
+
+    <MudStack Spacing="3">
+
+        <div class="contact-row">
+            <MudIcon Icon="@Icons.Material.Filled.Email" Class="contact-icon" />
+            <MudText Class="contact-text">contato@vertex.com</MudText>
+        </div>
+
+        <div class="contact-row">
+            <MudIcon Icon="@Icons.Material.Filled.Phone" Class="contact-icon" />
+            <MudText Class="contact-text">(83) 99999-9999</MudText>
+        </div>
+
+        <div class="contact-row">
+            <MudIcon Icon="@Icons.Material.Filled.LocationOn" Class="contact-icon" />
+            <MudText Class="contact-text">João Pessoa - PB</MudText>
+        </div>
+
+    </MudStack>
+</MudPaper>
+</MudContainer> 
+
+<!-- estilo -->
+
+<style>
+
+.hero-subtitle {
+    color: rgba(255,255,255,0.70);
+    margin-top: 14px;
+    line-height: 1.7;
+}
+
+.section-box {
+    background: rgba(18,56,92,0.88);
+
+    border-radius: 20px;
+
+    box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+}
+
+.section-text {
+    color: rgba(255, 255, 255, 0.72);
+    line-height: 1.8;
+}
+
+.feature-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 18px;
+    border-left: 3px solid #42A5F5;
+    transition: 0.5s;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+    background: rgba(81, 162, 197, 0.58);
+    /* sem mudar cor — só sobe levemente */
+}
+
+.vertex-brand {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+
+    margin-bottom: 20px;
+
+    margin-left: -80px;
+}
+
+.vertex-logo {
+
+    width: 500px;
+
+    height: 150px;
+
+    object-fit: contain;
+}
+
+.vertex-title {
+
+    color: white;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+}
+
+.hero-subtitle-title {
+
+    color: white;
+
+    font-weight: 600;
+
+    margin-bottom: 16px;
+}
+
+.hero-subtitle {
+
+    color: rgba(255,255,255,0.72);
+
+    line-height: 1.8;
+
+    max-width: 620px;
+}
+
+.section-box {
+
+    margin-bottom: 35px;
+}
+
+.hero-box {
+    min-height: 4px;
+    margin-bottom: 50px;
+
+    background:
+        linear-gradient(
+            to right,
+            rgba(18,56,92,0.82),
+            rgba(11,18,32,0.95)
+            
+        ),
+
+        url('https://blog.tourhouse.com.br/wp-content/uploads/2019/02/272902-gestao-de-orcamento-tudo-o-que-voce-precisa-saber-sobre-o-assunto.jpg');
+
+    background-size: cover;
+
+    background-position: center;
+
+    border-radius: 24px;
+
+    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+}
+
+.contact-divider {
+    border-color: rgba(66,165,245,0.4);
+}
+
+.contact-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.contact-icon {
+    font-size: 22px !important;
+    color: #42A5F5;
+}
+
+.contact-text {
+    color: rgba(255,255,255,0.80);
+    font-size: 16px;
+}
+
+.section-overline {
+    color: #42A5F5;
+    font-weight: 700;
+    letter-spacing: 3px;
+    font-size: 12px;
+    display: block;
+    margin-bottom: 3px;
+}
+
+.section-title {
+    color: white;
+    font-weight: 700;
+    position: relative;
+    padding-bottom: 14px;
+    margin-bottom: 6px;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 89px;
+    height: 3px;
+    background: #42A5F5;
+    border-radius: 4px;
+}
+
+.about-description {
+    max-width: 680px;
+    line-height: 1.9;
+    font-size: 16px;
+}
+
+.about-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.about-section::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(66,165,245,0.08), transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.about-description {
+    max-width: 680px;
+    line-height: 1.9;
+    font-size: 16px;
+}
+
+.mvv-item {
+    padding: 28px 24px;
+    border-top: none;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255, 255, 255, 0.43);
+    backdrop-filter: blur(8px);
+    transition: 0.5s ease;
+}
+
+.mvv-item:hover {
+    transform: translateY(-8px);
+    background: rgba(230, 239, 247, 0.08);
+    border-color: rgba(66,165,245,0.25);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+}
+
+.mvv-item:hover .mvv-line {
+    width: 48px;
+}
+
+.mvv-item:hover .mvv-icon-wrap {
+    background: rgba(66,165,245,0.20);
+    border-color: rgba(66,165,245,0.50);
+}
+
+.mvv-label {
+    color: white !important;
+    font-weight: 700;
+    font-size: 22px !important;
+    margin-bottom: 10px;
+}
+
+.mvv-line {
+    width: 24px;
+    height: 2px;
+    background: #42A5F5;
+    border-radius: 2px;
+    margin-bottom: 14px;
+    transition: width 0.5s ease;
+}
+
+.mvv-text {
+    color: rgba(255,255,255,0.65);
+    line-height: 1.8;
+    font-size: 17px;
+}
+
+.mvv-icon-wrap {
+    width: 58px;
+    height: 58px;
+    border-radius: 14px;
+    background: rgba(66,165,245,0.10);
+    border: 1px solid rgba(66, 164, 245, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+    transition: 0.5s;
+}
+
+.mvv-icon {
+    font-size: 30px !important;
+    color: #42A5F5;
+}
+
+
+</style>
+

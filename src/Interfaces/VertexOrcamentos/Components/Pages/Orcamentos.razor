@@ -1,8 +1,14 @@
 @page "/orcamentos"
 @inject IJSRuntime JS
+@using VertexOrcamentos.Components.Shared
 
 <PageTitle>Vertex | Orçamentos</PageTitle>
-
+<PageHeader
+    Titulo="Orçamentos"
+    Subtitulo="Gerencie e acompanhe os orçamentos" 
+    Imagem="https://files.sunoresearch.com.br/p/uploads/2018/07/or%C3%A7amento-empresarial.jpg"
+    ImagemPosicao="center 30%"/>
+    
 <style>
     @@media print {
         body * { visibility: hidden !important; }
@@ -150,46 +156,46 @@
         <MudStack Row="true" Spacing="1">
             <MudButton Variant="Variant.Filled" Color="Color.Success"
                        StartIcon="@Icons.Material.Filled.Add"
-                       Style="border-radius:10px; font-weight:600; font-size:13px;"
+                       Style="border-radius:30px; font-weight:600; font-size:13px;"
                        OnClick="@NovoOrcamento">Novo</MudButton>
             <MudButton Variant="Variant.Filled" Color="Color.Primary"
                        StartIcon="@Icons.Material.Filled.Save"
-                       Style="border-radius:10px; font-weight:600; font-size:13px; color:white;"
+                       Style="border-radius:30px; font-weight:600; font-size:13px; color:white;"
                        OnClick="@SalvarOrcamento">Salvar</MudButton>
             <MudButton Variant="Variant.Filled"
                        StartIcon="@Icons.Material.Filled.Print"
-                       Style="border-radius:10px; font-weight:600; font-size:13px; background:#0F172A; color:white;"
+                       Style="border-radius:30px; font-weight:600; font-size:13px; background:#0066CC; color:white;"
                        OnClick="@ImprimirOrcamento">Imprimir</MudButton>
             <MudButton Variant="Variant.Filled" Color="Color.Error"
                        StartIcon="@Icons.Material.Filled.Delete"
-                       Style="border-radius:10px; font-weight:600; font-size:13px;"
+                       Style="border-radius:30px; font-weight:600; font-size:13px;"
                        OnClick="@CancelarOrcamento">Cancelar</MudButton>
         </MudStack>
     </MudStack>
 
     <MudGrid Class="mb-4" Spacing="2">
         <MudItem xs="6" sm="3">
-            <MudPaper Class="pa-3" Elevation="0" Style="background:#111827; border-radius:12px; border:0.5px solid #1E293B;">
-                <MudText Typo="Typo.caption" Style="color:#64748B; display:block;">Orçamentos criados</MudText>
-                <MudText Typo="Typo.h5" Style="font-weight:700; color:white;">@orcamentosCriados</MudText>
+            <MudPaper Class="pa-4" Elevation="0" Style="background:#111827; border-radius:16px; #1E293B;">
+                <MudText Typo="Typo.body2" Style="color:#64748B;">Orçamentos criados</MudText>
+                <MudText Typo="Typo.h4" Style="font-weight:700; color:white;">@orcamentosCriados</MudText>
             </MudPaper>
         </MudItem>
         <MudItem xs="6" sm="3">
-            <MudPaper Class="pa-3" Elevation="0" Style="background:#111827; border-radius:12px; border:0.5px solid #1E293B;">
-                <MudText Typo="Typo.caption" Style="color:#64748B; display:block;">Produtos no estoque</MudText>
-                <MudText Typo="Typo.h5" Style="font-weight:700; color:#22C55E;">@produtosEstoque.Count</MudText>
+            <MudPaper Class="pa-4" Elevation="0" Style="background:#111827; border-radius:16px; #1E293B;">
+                <MudText Typo="Typo.body2" Style="color:#64748B; display:block;">Produtos no estoque</MudText>
+                <MudText Typo="Typo.h4" Style="font-weight:700; color:#22C55E;">@produtosEstoque.Count</MudText>
             </MudPaper>
         </MudItem>
         <MudItem xs="6" sm="3">
-            <MudPaper Class="pa-3" Elevation="0" Style="background:#111827; border-radius:12px; border:0.5px solid #1E293B;">
-                <MudText Typo="Typo.caption" Style="color:#64748B; display:block;">Itens no orçamento</MudText>
-                <MudText Typo="Typo.h5" Style="font-weight:700; color:#FACC15;">@itens.Count</MudText>
+            <MudPaper Class="pa-4" Elevation="0" Style="background:#111827; border-radius:16px; #1E293B;">
+                <MudText Typo="Typo.body2" Style="color:#64748B; display:block;">Itens no orçamento</MudText>
+                <MudText Typo="Typo.h4" Style="font-weight:700; color:#FACC15;">@itens.Count</MudText>
             </MudPaper>
         </MudItem>
         <MudItem xs="6" sm="3">
-            <MudPaper Class="pa-3" Elevation="0" Style="background:#111827; border-radius:12px; border:0.5px solid #1E293B;">
-                <MudText Typo="Typo.caption" Style="color:#64748B; display:block;">Total geral</MudText>
-                <MudText Typo="Typo.h5" Style="font-weight:700; color:#22C55E;">@TotalGeral.ToString("C")</MudText>
+            <MudPaper Class="pa-4" Elevation="0" Style="background:#111827; border-radius:16px; #1E293B;">
+                <MudText Typo="Typo.body2" Style="color:#64748B; display:block;">Total geral</MudText>
+                <MudText Typo="Typo.h4" Style="font-weight:700; color:#22C55E;">@TotalGeral.ToString("C")</MudText>
             </MudPaper>
         </MudItem>
     </MudGrid>
@@ -277,7 +283,7 @@
                     <MudItem xs="12">
                         <MudButton Variant="Variant.Filled" Color="Color.Success"
                                    StartIcon="@Icons.Material.Filled.AddShoppingCart"
-                                   Style="border-radius:10px; font-weight:600;"
+                                   Style="border-radius:30px; font-weight:600;"
                                    OnClick="@AdicionarItem" FullWidth="true">
                             Adicionar produto à lista
                         </MudButton>
@@ -403,7 +409,7 @@
 
                 @if (!string.IsNullOrWhiteSpace(cabecalho.CondicaoPagamento))
                 {
-                    <div style="margin-top:10px; padding:10px 14px; border-radius:10px; background:#0D1117; border:0.5px solid #1E293B;">
+                <div style="margin-top:10px; padding:10px 14px; border-radius:10px; background:#0D1117; border:0.5px solid #1E293B;">
                         <MudText Typo="Typo.caption" Style="color:#64748B; display:block;">Condição de pagamento</MudText>
                         <MudText Typo="Typo.body2" Style="color:#E2E8F0;">@cabecalho.CondicaoPagamento</MudText>
                     </div>
@@ -411,7 +417,7 @@
 
                 <MudButton Variant="Variant.Filled"
                            StartIcon="@Icons.Material.Filled.Print"
-                           Style="border-radius:10px; font-weight:600; font-size:14px; background:#0F172A; color:white; margin-top:16px;"
+                           Style="border-radius:30px; font-weight:600; font-size:14px; background:#0066CC; color:white; margin-top:16px;"
                            OnClick="@ImprimirOrcamento" FullWidth="true">
                     Gerar / Imprimir PDF
                 </MudButton>
