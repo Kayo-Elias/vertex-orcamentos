@@ -1,42 +1,36 @@
 @page "/relatorios"
+@using VertexOrcamentos.Components.Shared
 
 <PageTitle>Vertex | Relatórios</PageTitle>
 
-<div class="relatorios-page">
-
     <!-- HEADER -->
 
-    <div class="header-area">
+           <PageHeader
+    Titulo="Central de Relatórios"
+    Subtitulo="Gere análises estratégicas e acompanhe o desempenho operacional do sistema" 
+    Imagem="https://plus.unsplash.com/premium_photo-1661315406324-329dd27ebc34?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cmVsYXQlQzMlQjNyaW98ZW58MHx8MHx8fDA%3D"
+    ImagemPosicao="center"/>
 
-        <div>
-
-            <MudText Typo="Typo.h2" Class="title">
-                Central de Relatórios
-            </MudText>
-
-            <MudText Typo="Typo.subtitle1" Class="subtitle">
-                Gere análises estratégicas e acompanhe o desempenho operacional do sistema
-            </MudText>
-
-        </div>
-
+<div class="d-flex justify-end mt-4 mb-4">
         <MudButton Variant="Variant.Filled"
                    Color="Color.Primary"
-                   StartIcon="@Icons.Material.Filled.Download">
+                   StartIcon="@Icons.Material.Filled.Download"
+                   Class="mt-4 mb-4"
+                   Style="border-radius: 12px;">
+                  
 
             Exportar Relatório
 
         </MudButton>
-
-    </div>
-
+</div> 
     <!-- RELATORIOS RAPIDOS -->
 
     <MudGrid>
+       <!-- gerar relatorio -->
 
         <MudItem xs="12" md="3">
 
-            <MudPaper Class="report-card">
+            <MudPaper Class="report-card" Elevation="0">
 
                 <MudIcon Icon="@Icons.Material.Filled.Inventory2"
                          Size="Size.Large"
@@ -51,7 +45,8 @@
                 </MudText>
 
                 <MudButton Variant="Variant.Text"
-                           Color="Color.Info">
+                           Color="Color.Info"
+                           Style="border-radius: 12px;">
 
                     Gerar relatório
 
@@ -61,6 +56,7 @@
 
         </MudItem>
 
+<!-- produtos parados -->
         <MudItem xs="12" md="3">
 
             <MudPaper Class="report-card">
@@ -78,7 +74,8 @@
                 </MudText>
 
                 <MudButton Variant="Variant.Text"
-                           Color="Color.Warning">
+                           Color="Color.Warning"
+                           Style="border-radius: 12px;">
 
                     Gerar relatório
 
@@ -88,6 +85,7 @@
 
         </MudItem>
 
+<!-- horario de pico -->
         <MudItem xs="12" md="3">
 
             <MudPaper Class="report-card">
@@ -105,7 +103,8 @@
                 </MudText>
 
                 <MudButton Variant="Variant.Text"
-                           Color="Color.Success">
+                           Color="Color.Success"
+                           Style="border-radius: 12px;">
 
                     Gerar relatório
 
@@ -114,7 +113,7 @@
             </MudPaper>
 
         </MudItem>
-
+<!-- desempenho geral -->
         <MudItem xs="12" md="3">
 
             <MudPaper Class="report-card">
@@ -132,7 +131,8 @@
                 </MudText>
 
                 <MudButton Variant="Variant.Text"
-                           Color="Color.Error">
+                           Color="Color.Error"
+                           Style="border-radius: 12px;">
 
                     Gerar relatório
 
@@ -150,7 +150,7 @@
 
         <MudItem xs="12" md="6">
 
-            <MudPaper Class="analysis-box">
+            <MudPaper Class="analysis-box" Elevation="0">
 
                 <MudText Typo="Typo.h5" Class="section-title">
                     Produtos com Baixa Saída
@@ -224,7 +224,7 @@
 
     <!-- ALERTAS -->
 
-    <MudPaper Class="alerts-box mt-4">
+    <MudPaper Class="alerts-box mt-4" Elevation="0">
 
         <MudText Typo="Typo.h5" Class="section-title">
             Alertas Inteligentes
@@ -267,7 +267,7 @@
 
     <!-- RESUMO OPERACIONAL -->
 
-    <MudPaper Class="summary-box mt-4">
+    <MudPaper Class="summary-box mt-4" Elevation="0">
 
         <MudText Typo="Typo.h5" Class="section-title">
             Resumo Operacional
@@ -339,7 +339,6 @@
 
     </MudPaper>
 
-</div>
 
 <style>
 
@@ -372,24 +371,43 @@
 }
 
 .report-card {
-
-    background: linear-gradient(135deg, #071D36, #12385C) !important;
+    padding: 28px 24px;
     border-radius: 18px;
-    padding: 25px;
-    transition: 0.25s;
-    height: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    backdrop-filter: blur(8px);
+    transition: 0.3s ease;
 }
 
 .report-card:hover {
-
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    transform: translateY(-8px);
+    background: rgba(143, 199, 236, 0.1);
+    border-color: rgba(66, 164, 245, 0.67);
+    box-shadow: 0 12px 32px rgba(20, 189, 211, 0.25);
 }
 
 .report-icon {
+    font-size: 30px !important;
+    color: #42A5F5;
+    margin-bottom: 18px;
+}
 
-    color: #4FC3F7;
-    margin-bottom: 15px;
+.report-icon.warning { color: #FACC15; }
+.report-icon.success { color: #22C55E; }
+.report-icon.danger  { color: #EF4444; }
+
+.report-title {
+    color: white !important;
+    font-weight: 700;
+    font-size: 18px !important;
+    margin-bottom: 10px;
+}
+
+.report-text {
+    color: rgba(255,255,255,0.65);
+    line-height: 1.8;
+    font-size: 15px;
+    margin-bottom: 16px;
 }
 
 .warning {
@@ -407,18 +425,6 @@
     color: #FF4D6D;
 }
 
-.report-title {
-
-    color: white;
-    margin-bottom: 10px;
-}
-
-.report-text {
-
-    color: rgba(255,255,255,0.7);
-    margin-bottom: 20px;
-}
-
 .analysis-box,
 .alerts-box,
 .summary-box {
@@ -434,24 +440,32 @@
     margin-bottom: 20px;
 }
 
-.analysis-item {
+.analysis-box {
+    padding: 28px 24px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid rgba(255,255,255,0.07);
+    backdrop-filter: blur(8px);
+    transition: 0.5s ease;
+}
 
+.analysis-box:hover {
+    border-color: rgba(66,165,245,0.25);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+}
+
+.analysis-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-    color: white;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    color: rgba(255,255,255,0.80);
+    font-size: 15px;
 }
 
-.alert-item {
-
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: white;
-    padding: 14px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
+.analysis-item:last-child {
+    border-bottom: none;
 }
 
 .summary-card {
@@ -474,5 +488,79 @@
 
     color: rgba(255,255,255,0.7);
 }
+.analysis-box .section-title {
+    font-weight: 800;
+    margin-bottom: 16px;
+}
 
+.alerts-box {
+    padding: 28px 24px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid rgba(255,255,255,0.07);
+    backdrop-filter: blur(8px);
+    transition: 0.3s ease;
+}
+
+.alerts-box:hover {
+    border-color: rgba(66,165,245,0.25);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+}
+
+.alert-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    color: white;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.alert-item:last-child {
+    border-bottom: none;
+}
+
+.summary-box {
+    padding: 28px 24px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid rgba(255,255,255,0.07);
+    backdrop-filter: blur(8px);
+    transition: 0.3s ease;
+}
+
+.summary-box:hover {
+    border-color: rgba(66,165,245,0.25);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+}
+
+.summary-card {
+    padding: 20px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    text-align: center;
+    transition: 0.3s ease;
+}
+
+.summary-card:hover {
+    transform: translateY(-6px);
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(66,165,245,0.25);
+}
+
+.summary-number {
+    color: white;
+    font-size: 32px;
+    font-weight: 800;
+    margin: 10px 0 4px 0;
+}
+
+.summary-label {
+    color: rgba(255,255,255,0.60);
+    font-size: 14px;
+    line-height: 1.5;
+}
 </style>
