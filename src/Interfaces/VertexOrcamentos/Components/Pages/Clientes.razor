@@ -1,393 +1,210 @@
-@page "/clientes";
+@page "/clientes"
 @using VertexOrcamentos.Components.Shared
+@inject ClienteService ClienteService
+@inject ISnackbar Snackbar
 
 <PageTitle>Vertex | Clientes</PageTitle>
 
-<!-- Cabecalho -->
-
 <PageHeader
     Titulo="Clientes"
-    Subtitulo="Gerencie e acompanhe o cadastro dos clientes" 
+    Subtitulo="Gerencie e acompanhe o cadastro dos clientes"
     Imagem="https://www.dabusarquitetura.com.br/blog/wp-content/uploads/2024/02/como-receber-cliente-escritorio.png"
-    ImagemPosicao="center 100"/>
+    ImagemPosicao="center 100" />
 
-<!-- botoes de criar, editar e excluir -->
-
-<MudStack Row="true"
-          Spacing="2"
-          Wrap="Wrap.Wrap"
-          Class="mb-6">
-
-    <MudButton
-        Variant="Variant.Filled"
-        Color="Color.Success"
-        StartIcon="@Icons.Material.Filled.Add"
-        Style="border-radius:12px; font-weight:800;">
-        Criar
-    </MudButton>
-
-    <MudButton 
-        Variant="Variant.Filled"
-        Color="Color.Primary"
-        StartIcon="@Icons.Material.Filled.Edit"
-        Style="border-radius:12px; font-weight:800; color:white;">
-        Editar
-    </MudButton>
-    
-    <MudButton 
-        Variant="Variant.Filled"
-        Color="Color.Error"
-        StartIcon="@Icons.Material.Filled.Delete"
-        Style="border-radius:12px; font-weight:800;">
-        Excluir
-    </MudButton>
-
+<MudStack Row="true" Spacing="2" Wrap="Wrap.Wrap" Class="mb-6">
+    <MudButton Variant="Variant.Filled" Color="Color.Success" StartIcon="@Icons.Material.Filled.Add" Style="border-radius:12px; font-weight:800;" OnClick="NovoCliente">Criar</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Style="border-radius:12px; font-weight:800; color:white;" Disabled="@(selecionado is null)" OnClick="EditarSelecionadoAsync">Editar</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete" Style="border-radius:12px; font-weight:800;" Disabled="@(selecionado is null)" OnClick="ExcluirSelecionadoAsync">Excluir</MudButton>
 </MudStack>
 
-<!-- cards de resumo, dashboards -->
-
 <MudGrid Class="mt-2 mb-4">
-
-    <MudItem xs="12" sm="6" md="3">
-        <MudPaper Class="pa-4"
-                  Style="background:#111827; border-radius:16px;">
-
-            <MudText Typo="Typo.body2" Style="color:#94A3B8;">
-                Total de Clientes
-            </MudText>
-
-            <MudText Typo="Typo.h4" Style="font-weight:700; color:white;">
-                128
-            </MudText>
-
-        </MudPaper>
-    </MudItem>
-
-    <MudItem xs="12" sm="6" md="3">
-        <MudPaper Class="pa-4"
-                  Style="background:#111827; border-radius:16px;">
-
-            <MudText Typo="Typo.body2" Style="color:#94A3B8;">
-                Clientes Ativos
-            </MudText>
-
-            <MudText Typo="Typo.h4" Style="font-weight:700; color:#22C55E;">
-                98
-            </MudText>
-
-        </MudPaper>
-    </MudItem>
-
-    <MudItem xs="12" sm="6" md="3">
-        <MudPaper Class="pa-4"
-                  Style="background:#111827; border-radius:16px;">
-
-            <MudText Typo="Typo.body2" Style="color:#94A3B8;">
-                Pendentes
-            </MudText>
-
-            <MudText Typo="Typo.h4" Style="font-weight:700; color:#FACC15;">
-                12
-            </MudText>
-
-        </MudPaper>
-    </MudItem>
-
-    <MudItem xs="12" sm="6" md="3">
-        <MudPaper Class="pa-4"
-                  Style="background:#111827; border-radius:16px;">
-
-            <MudText Typo="Typo.body2" Style="color:#94A3B8;">
-                Bloqueados
-            </MudText>
-
-            <MudText Typo="Typo.h4" Style="font-weight:700; color:#EF4444;">
-                18
-            </MudText>
-
-        </MudPaper>
-    </MudItem>
-
+    <MudItem xs="12" sm="6" md="3"><MudPaper Class="pa-4" Style="background:#111827; border-radius:16px;"><MudText Typo="Typo.body2" Style="color:#94A3B8;">Total de Clientes</MudText><MudText Typo="Typo.h4" Style="font-weight:700; color:white;">@resumo.Total</MudText></MudPaper></MudItem>
+    <MudItem xs="12" sm="6" md="3"><MudPaper Class="pa-4" Style="background:#111827; border-radius:16px;"><MudText Typo="Typo.body2" Style="color:#94A3B8;">Clientes Ativos</MudText><MudText Typo="Typo.h4" Style="font-weight:700; color:#22C55E;">@resumo.Ativos</MudText></MudPaper></MudItem>
+    <MudItem xs="12" sm="6" md="3"><MudPaper Class="pa-4" Style="background:#111827; border-radius:16px;"><MudText Typo="Typo.body2" Style="color:#94A3B8;">Pendentes</MudText><MudText Typo="Typo.h4" Style="font-weight:700; color:#FACC15;">@resumo.Pendentes</MudText></MudPaper></MudItem>
+    <MudItem xs="12" sm="6" md="3"><MudPaper Class="pa-4" Style="background:#111827; border-radius:16px;"><MudText Typo="Typo.body2" Style="color:#94A3B8;">Bloqueados</MudText><MudText Typo="Typo.h4" Style="font-weight:700; color:#EF4444;">@resumo.Bloqueados</MudText></MudPaper></MudItem>
 </MudGrid>
 
-<!-- pesquisa e botao de buscar -->
-
-<MudPaper Class="pa-4 pa-sm-6"
-          Elevation="0"
-          Style="background-color:#111927; border-radius:16px;">
-
-    <MudStack Row="true"
-          Spacing="2"
-          Wrap="Wrap.Wrap"
-          AlignItems="AlignItems.Center">
-
-        <MudTextField T="string"
-                      Placeholder="Pesquisar cliente"
-                      Variant="Variant.Outlined"
-                      Adornment="Adornment.Start"
-                      AdornmentIcon="@Icons.Material.Filled.Search"
-                      FullWidth="true" />
-
-        <MudButton Variant="Variant.Filled"
-           Color="Color.Primary"
-           FullWidth="true"
-           Style="border-radius: 12px; font-weight:800; color:white;">
-            Buscar
-        </MudButton>
-
+<MudPaper Class="pa-4 pa-sm-6" Elevation="0" Style="background-color:#111927; border-radius:16px;">
+    <MudStack Row="true" Spacing="2" Wrap="Wrap.Wrap" AlignItems="AlignItems.Center">
+        <MudTextField T="string" Value="@busca" ValueChanged="BuscarAsync" Placeholder="Pesquisar cliente" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" FullWidth="true" Immediate="true" DebounceInterval="350" />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Style="border-radius: 12px; font-weight:800; color:white;" OnClick="@(() => CarregarAsync())">Buscar</MudButton>
     </MudStack>
-
 </MudPaper>
-
-<!-- tabela -->
 
 <MudPaper Class="usuarios-box">
-
-<MudTable Items="@clientes"
-          Hover="true"
-          Striped="false"
-          Bordered="false"
-          Dense="false"
-          Class="usuarios-table">
-
-    <HeaderContent>
-
-        <MudTh>Cliente</MudTh>
-
-        <MudTh Class="hide-mobile">Email</MudTh>
-
-        <MudTh>Telefone</MudTh>
-
-        <MudTh>Status</MudTh>
-
-        <MudTh>Ações</MudTh>
-
-    </HeaderContent>
-
-    <RowTemplate>
-
-        <MudTr Class="custom-row">
-
-            <!-- Cliente (com avatar estilo usuários) -->
-            <MudTd>
-
-                <div class="user-info">
-
-                    <MudAvatar Size="Size.Medium"
-                               Color="Color.Primary">
-
-                        @context.Nome.Substring(0, 1)
-
-                    </MudAvatar>
-
-                    <div>
-
-                        <MudText Typo="Typo.body1">
-                            @context.Nome
-                        </MudText>
-
-                        <MudText Typo="Typo.caption"
-                                 Class="user-id">
-
-                            Cliente
-
-                        </MudText>
-
-                        <!-- Email mobile -->
-                        <MudText Typo="Typo.caption"
-                                 Class="user-email-mobile">
-
-                            @context.Email
-
-                        </MudText>
-
+    <MudTable Items="@clientes" Hover="true" Loading="@carregando" Striped="false" Bordered="false" Dense="false" Class="usuarios-table clientes-table" RowClass="custom-row" @bind-SelectedItem="selecionado">
+        <HeaderContent>
+            <MudTh>Cliente</MudTh>
+            <MudTh Class="hide-mobile">Email</MudTh>
+            <MudTh>Telefone</MudTh>
+            <MudTh>Status</MudTh>
+            <MudTh>Ações</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+                <MudTd>
+                    <div class="user-info">
+                        <MudAvatar Size="Size.Medium" Color="Color.Primary">@PrimeiraLetra(context.Nome)</MudAvatar>
+                        <div>
+                            <MudText Typo="Typo.body1">@context.Nome</MudText>
+                            <MudText Typo="Typo.caption" Class="user-id">@context.Cpf</MudText>
+                            <MudText Typo="Typo.caption" Class="user-email-mobile">@context.Email</MudText>
+                        </div>
                     </div>
-
-                </div>
-
-            </MudTd>
-
-            <!-- Email desktop -->
-            <MudTd Class="hide-mobile">
-                @context.Email
-            </MudTd>
-
-            <!-- Telefone -->
-            <MudTd>
-                @context.Telefone
-            </MudTd>
-
-            <!-- Status -->
-           <MudTd>
-
-    <MudChip T="string"
-             Color="Color.Success"
-             Variant="Variant.Filled"
-             Size="Size.Small">
-
-        Ativo
-
-    </MudChip>
-
-</MudTd>
-
-            <!-- Ações -->
-            <MudTd>
-
-                <div class="acoes-area">
-
-                    <MudTooltip Text="Editar">
-
-                        <MudIconButton Icon="@Icons.Material.Filled.Edit"
-                                       Color="Color.Default"
-                                       Style="color: #42A5F5;"
-                                       Size="Size.Small"
-                                       Class="action-btn" />
-
-                    </MudTooltip>
-
-                    <MudTooltip Text="Excluir">
-
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                                       Color="Color.Error"
-                                       Size="Size.Small"
-                                       Class="action-btn" />
-
-                    </MudTooltip>
-
-                </div>
-
-            </MudTd>
-
-        </MudTr>
-
-    </RowTemplate>
-
-</MudTable>
-
+                </MudTd>
+                <MudTd Class="hide-mobile">@context.Email</MudTd>
+                <MudTd>@context.Telefone</MudTd>
+                <MudTd><MudChip T="string" Color="@StatusColor(context.Status)" Variant="Variant.Filled" Size="Size.Small">@context.Status</MudChip></MudTd>
+                <MudTd>
+                    <div class="acoes-area">
+                        <MudTooltip Text="Editar"><MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Default" Style="color: #42A5F5;" Size="Size.Small" Class="action-btn" OnClick="@(() => EditarClienteAsync(context.Id))" /></MudTooltip>
+                        <MudTooltip Text="Excluir"><MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" Class="action-btn" OnClick="@(() => ExcluirClienteAsync(context.Id))" /></MudTooltip>
+                    </div>
+                </MudTd>
+        </RowTemplate>
+        <NoRecordsContent><MudText Style="color:white; padding:16px;">Nenhum cliente encontrado.</MudText></NoRecordsContent>
+    </MudTable>
 </MudPaper>
 
-<!-- estilo da tabela -->
+@if (formAberto)
+{
+    <div class="modal-backdrop">
+        <MudPaper Class="form-box" Elevation="12">
+            <div class="form-header">
+                <MudText Typo="Typo.h5">@(form.Id.HasValue ? "Editar cliente" : "Criar cliente")</MudText>
+                <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="FecharForm" />
+            </div>
+            <MudForm @ref="mudForm">
+                <MudGrid>
+                    <MudItem xs="12" sm="6"><MudTextField @bind-Value="form.Nome" Label="Nome" Variant="Variant.Outlined" Required="true" MaxLength="20" /></MudItem>
+                    <MudItem xs="12" sm="6"><MudTextField @bind-Value="form.Cpf" Label="CPF/CNPJ" Variant="Variant.Outlined" Required="true" MaxLength="14" /></MudItem>
+                    <MudItem xs="12" sm="6"><MudTextField @bind-Value="form.Email" Label="Email" Variant="Variant.Outlined" Required="true" MaxLength="120" /></MudItem>
+                    <MudItem xs="12" sm="6"><MudTextField @bind-Value="form.Telefone" Label="Telefone" Variant="Variant.Outlined" Required="true" MaxLength="20" /></MudItem>
+                    <MudItem xs="12"><MudTextField @bind-Value="form.Endereco" Label="Endereco" Variant="Variant.Outlined" Required="true" MaxLength="100" /></MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudSelect @bind-Value="form.Status" Label="Status" Variant="Variant.Outlined">
+                            <MudSelectItem Value="@("Ativo")">Ativo</MudSelectItem>
+                            <MudSelectItem Value="@("Pendente")">Pendente</MudSelectItem>
+                            <MudSelectItem Value="@("Bloqueado")">Bloqueado</MudSelectItem>
+                        </MudSelect>
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+            <div class="form-actions">
+                <MudButton Variant="Variant.Text" OnClick="FecharForm">Cancelar</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SalvarAsync">Salvar</MudButton>
+            </div>
+        </MudPaper>
+    </div>
+}
 
 <style>
-
-.usuarios-box {
-    background: rgba(18,56,92,0.88) !important;
-    backdrop-filter: blur(10px);
-    border-radius: 18px;
-    padding: 20px;
-    box-shadow: 0 8px 30px rgba(78, 107, 120, 0.44);
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.user-id {
-    color: rgba(255,255,255,0.55);
-}
-
-.custom-row {
-    transition: 0.2s;
-}
-
-.custom-row:hover {
-    background-color: rgba(255, 255, 255, 0) !important;
-}
-
-.acoes-area {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-}
-
-.action-btn {
-    transition: 0.2s;
-    border-radius: 10px;
-}
-
-.action-btn:hover {
-    transform: scale(1.1);
-    background-color: rgba(236, 173, 173, 0.08);
-}
-
-.mud-table {
-    background: rgba(22, 57, 109, 0.5) !important;
-}
-
-.mud-table-head th {
-    color: white !important;
-    font-size: 15px;
-    font-weight: 600;
-    border-bottom: 1px solid rgba(151, 179, 190, 0.48);
-}
-
-.mud-table-body td {
-    color: white !important;
-    border-bottom: 1px solid rgba(151, 179, 190, 0.48);
-}
-
-.mud-avatar {
-    background: #3B82F6 !important;
-    color: white !important;
-    font-weight: bold;
-}
-
-.user-email-mobile {
-    color: rgba(255,255,255,0.55);
-}
-
-.hide-mobile {
-    display: table-cell;
-}
-
-@@media (max-width: 768px) {
-
-    .hide-mobile {
-        display: none;
-    }
-
-    .user-info {
-        gap: 10px;
-    }
-
-    .mud-table-body td,
-    .mud-table-head th {
-        font-size: 13px;
-    }
-}
-
-.custom-row:hover {
-    background-color: rgba(255,255,255,0.06) !important;
-}
-
+.usuarios-box { background: rgba(18,56,92,0.88) !important; backdrop-filter: blur(10px); border-radius: 18px; padding: 20px; box-shadow: 0 8px 30px rgba(78, 107, 120, 0.44); overflow-x: auto; }
+.user-info { display: flex; align-items: center; gap: 15px; }
+.user-id, .user-email-mobile { color: rgba(255,255,255,0.55); }
+.custom-row { transition: 0.2s; }
+.acoes-area { display: flex; gap: 6px; align-items: center; }
+.action-btn { transition: 0.2s; border-radius: 10px; }
+.action-btn:hover { transform: scale(1.1); background-color: rgba(236, 173, 173, 0.08); }
+.usuarios-table { min-width: 860px; }
+.clientes-table th:nth-child(1), .clientes-table td:nth-child(1) { width: 34%; }
+.clientes-table th:nth-child(2), .clientes-table td:nth-child(2) { width: 26%; }
+.clientes-table th:nth-child(3), .clientes-table td:nth-child(3) { width: 16%; }
+.clientes-table th:nth-child(4), .clientes-table td:nth-child(4) { width: 12%; }
+.clientes-table th:nth-child(5), .clientes-table td:nth-child(5) { width: 12%; }
+.mud-table { background: rgba(22, 57, 109, 0.5) !important; width: 100% !important; table-layout: fixed; }
+.mud-table-head th { color: white !important; font-size: 15px; font-weight: 600; border-bottom: 1px solid rgba(151, 179, 190, 0.48); white-space: nowrap; }
+.mud-table-body td { color: white !important; border-bottom: 1px solid rgba(151, 179, 190, 0.48); vertical-align: middle; overflow-wrap: anywhere; }
+.mud-avatar { background: #3B82F6 !important; color: white !important; font-weight: bold; }
+.hide-mobile { display: table-cell; }
+.custom-row:hover { background-color: rgba(255,255,255,0.06) !important; }
+.modal-backdrop { position: fixed; inset: 0; z-index: 1300; background: rgba(2, 6, 23, 0.68); display: flex; align-items: center; justify-content: center; padding: 24px; }
+.form-box { width: min(820px, 100%); max-height: 92vh; overflow-y: auto; padding: 28px; border-radius: 16px; }
+.form-header, .form-actions { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.form-header { margin-bottom: 24px; }
+.form-actions { justify-content: flex-end; margin-top: 24px; }
+@@media (max-width: 768px) { .usuarios-table { min-width: 640px; } .hide-mobile { display: none; } .user-info { gap: 10px; } .mud-table-body td, .mud-table-head th { font-size: 13px; } }
 </style>
 
 @code {
+    private readonly List<ClienteListItem> clientes = [];
+    private ClienteResumo resumo = new();
+    private ClienteFormModel form = new();
+    private ClienteListItem? selecionado;
+    private MudForm? mudForm;
+    private string? busca;
+    private bool carregando;
+    private bool formAberto;
 
-    public class Cliente
+    protected override async Task OnInitializedAsync() => await CarregarAsync();
+
+    private async Task BuscarAsync(string termo)
     {
-        public string Nome { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string Telefone { get; set; } = string.Empty;
+        busca = termo;
+        await CarregarAsync();
     }
 
-    private List<Cliente> clientes = new()
+    private async Task CarregarAsync()
     {
-        new Cliente
-        {
-            Nome = "Maria Silva",
-            Email = "maria@email.com",
-            Telefone = "(83) 99999-9999"
-        },
+        carregando = true;
+        clientes.Clear();
+        clientes.AddRange(await ClienteService.ListarAsync(busca));
+        resumo = await ClienteService.ObterResumoAsync();
+        carregando = false;
+    }
 
-        new Cliente
-        {
-            Nome = "João Pedro",
-            Email = "joao@email.com",
-            Telefone = "(83) 98888-8888"
-        }
+    private void NovoCliente()
+    {
+        form = new ClienteFormModel();
+        formAberto = true;
+    }
+
+    private async Task EditarSelecionadoAsync()
+    {
+        if (selecionado is not null) await EditarClienteAsync(selecionado.Id);
+    }
+
+    private async Task EditarClienteAsync(Guid id)
+    {
+        var cliente = await ClienteService.ObterAsync(id);
+        if (cliente is null) return;
+        form = cliente;
+        formAberto = true;
+    }
+
+    private async Task SalvarAsync()
+    {
+        if (mudForm is null) return;
+        await mudForm.ValidateAsync();
+        if (!mudForm.IsValid) return;
+
+        if (form.Id.HasValue) await ClienteService.AtualizarAsync(form.Id.Value, form);
+        else await ClienteService.CriarAsync(form);
+
+        Snackbar.Add("Cliente salvo com sucesso.", Severity.Success);
+        formAberto = false;
+        await CarregarAsync();
+    }
+
+    private async Task ExcluirSelecionadoAsync()
+    {
+        if (selecionado is not null) await ExcluirClienteAsync(selecionado.Id);
+    }
+
+    private async Task ExcluirClienteAsync(Guid id)
+    {
+        await ClienteService.ExcluirAsync(id);
+        Snackbar.Add("Cliente removido ou bloqueado com sucesso.", Severity.Success);
+        await CarregarAsync();
+    }
+
+    private void FecharForm() => formAberto = false;
+
+    private static Color StatusColor(string status) => status switch
+    {
+        "Pendente" => Color.Warning,
+        "Bloqueado" => Color.Error,
+        _ => Color.Success
     };
+
+    private static string PrimeiraLetra(string valor) => string.IsNullOrWhiteSpace(valor) ? "?" : valor.Trim()[0].ToString().ToUpperInvariant();
 }

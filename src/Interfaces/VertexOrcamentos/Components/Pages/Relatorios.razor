@@ -1,347 +1,180 @@
 @page "/relatorios"
+@using System.Globalization
+@using System.Text
 @using VertexOrcamentos.Components.Shared
+@inject RelatorioService RelatorioService
+@inject IJSRuntime JS
+@inject ISnackbar Snackbar
 
-<PageTitle>Vertex | Relatórios</PageTitle>
+<PageTitle>Vertex | Relatorios</PageTitle>
 
-    <!-- HEADER -->
-
-           <PageHeader
-    Titulo="Central de Relatórios"
-    Subtitulo="Gere análises estratégicas e acompanhe o desempenho operacional do sistema" 
+<PageHeader
+    Titulo="Central de Relatorios"
+    Subtitulo="Gere analises estrategicas e acompanhe o desempenho operacional do sistema"
     Imagem="https://plus.unsplash.com/premium_photo-1661315406324-329dd27ebc34?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cmVsYXQlQzMlQjNyaW98ZW58MHx8MHx8fDA%3D"
-    ImagemPosicao="center"/>
+    ImagemPosicao="center" />
 
 <div class="d-flex justify-end mt-4 mb-4">
-        <MudButton Variant="Variant.Filled"
-                   Color="Color.Primary"
-                   StartIcon="@Icons.Material.Filled.Download"
-                   Class="mt-4 mb-4"
-                   Style="border-radius: 12px;">
-                  
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               StartIcon="@Icons.Material.Filled.Download"
+               Style="border-radius: 12px;"
+               Disabled="@carregando"
+               OnClick="ExportarRelatorioAsync">
+        Exportar Relatorio
+    </MudButton>
+</div>
 
-            Exportar Relatório
+@if (!string.IsNullOrWhiteSpace(mensagemErro))
+{
+    <MudAlert Severity="Severity.Error" Class="mb-4">@mensagemErro</MudAlert>
+}
 
-        </MudButton>
-</div> 
-    <!-- RELATORIOS RAPIDOS -->
+@if (carregando)
+{
+    <MudProgressLinear Color="Color.Info" Indeterminate="true" Class="mb-4" />
+}
+
+<MudGrid>
+    <MudItem xs="12" md="3">
+        <MudPaper Class="report-card" Elevation="0">
+            <MudIcon Icon="@Icons.Material.Filled.Inventory2" Size="Size.Large" Class="report-icon" />
+            <MudText Typo="Typo.h6" Class="report-title">Estoque Critico</MudText>
+            <MudText Class="report-text">@Dashboard.ProdutosCriticos produto(s) abaixo do limite</MudText>
+            <MudButton Variant="Variant.Text" Color="Color.Info" OnClick="@(() => SelecionarRelatorio("estoque"))">
+                Ver detalhes
+            </MudButton>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" md="3">
+        <MudPaper Class="report-card">
+            <MudIcon Icon="@Icons.Material.Filled.WarningAmber" Size="Size.Large" Class="report-icon warning" />
+            <MudText Typo="Typo.h6" Class="report-title">Produtos Parados</MudText>
+            <MudText Class="report-text">@Dashboard.ProdutosParados.Count item(ns) sem movimento recente</MudText>
+            <MudButton Variant="Variant.Text" Color="Color.Warning" OnClick="@(() => SelecionarRelatorio("parados"))">
+                Ver detalhes
+            </MudButton>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" md="3">
+        <MudPaper Class="report-card">
+            <MudIcon Icon="@Icons.Material.Filled.Schedule" Size="Size.Large" Class="report-icon success" />
+            <MudText Typo="Typo.h6" Class="report-title">Horarios de Pico</MudText>
+            <MudText Class="report-text">Maior fluxo: @Dashboard.HorarioPico</MudText>
+            <MudButton Variant="Variant.Text" Color="Color.Success" OnClick="@(() => SelecionarRelatorio("pico"))">
+                Ver detalhes
+            </MudButton>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" md="3">
+        <MudPaper Class="report-card">
+            <MudIcon Icon="@Icons.Material.Filled.Assessment" Size="Size.Large" Class="report-icon danger" />
+            <MudText Typo="Typo.h6" Class="report-title">Desempenho Geral</MudText>
+            <MudText Class="report-text">@Dashboard.EficienciaOperacional% de eficiencia operacional</MudText>
+            <MudButton Variant="Variant.Text" Color="Color.Error" OnClick="@(() => SelecionarRelatorio("desempenho"))">
+                Ver detalhes
+            </MudButton>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+@if (!string.IsNullOrWhiteSpace(relatorioSelecionado))
+{
+    <MudPaper Class="analysis-box mt-4" Elevation="0">
+        <MudText Typo="Typo.h5" Class="section-title">@tituloRelatorioSelecionado</MudText>
+        <MudText Class="report-text">@descricaoRelatorioSelecionado</MudText>
+    </MudPaper>
+}
+
+<MudGrid Class="mt-4">
+    <MudItem xs="12" md="6">
+        <MudPaper Class="analysis-box" Elevation="0">
+            <MudText Typo="Typo.h5" Class="section-title">Produtos com Baixa Saida</MudText>
+            @foreach (var produto in ItensOuVazio(Dashboard.ProdutosBaixaSaida))
+            {
+                <div class="analysis-item">
+                    <span>@produto.Nome</span>
+                    <MudChip T="string" Color="@(produto.Movimentacoes == 0 ? Color.Error : Color.Warning)">
+                        @(produto.Movimentacoes == 0 ? "Sem vendas" : $"{produto.Movimentacoes} venda(s)")
+                    </MudChip>
+                </div>
+            }
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" md="6">
+        <MudPaper Class="analysis-box">
+            <MudText Typo="Typo.h5" Class="section-title">Produtos Mais Vendidos</MudText>
+            @foreach (var produto in ItensOuVazio(Dashboard.ProdutosMaisVendidos))
+            {
+                <div class="analysis-item">
+                    <span>@produto.Nome</span>
+                    <MudChip T="string" Color="Color.Success">@produto.Movimentacoes venda(s)</MudChip>
+                </div>
+            }
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+<MudPaper Class="alerts-box mt-4" Elevation="0">
+    <MudText Typo="Typo.h5" Class="section-title">Alertas Inteligentes</MudText>
+    @foreach (var alerta in Dashboard.Alertas)
+    {
+        <div class="alert-item">
+            <MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Warning" />
+            <span>@alerta</span>
+        </div>
+    }
+</MudPaper>
+
+<MudPaper Class="summary-box mt-4" Elevation="0">
+    <MudText Typo="Typo.h5" Class="section-title">Resumo Operacional</MudText>
+    <MudGrid>
+        <MudItem xs="12" md="4">
+            <div class="summary-card">
+                <MudIcon Icon="@Icons.Material.Filled.AccessTime" Color="Color.Info" Size="Size.Large" />
+                <MudText Class="summary-number">@Dashboard.TempoMedioAtendimento</MudText>
+                <MudText Class="summary-label">Tempo medio de atendimento</MudText>
+            </div>
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <div class="summary-card">
+                <MudIcon Icon="@Icons.Material.Filled.Inventory" Color="Color.Warning" Size="Size.Large" />
+                <MudText Class="summary-number">@Dashboard.ProdutosEmFalta</MudText>
+                <MudText Class="summary-label">Produtos em falta</MudText>
+            </div>
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <div class="summary-card">
+                <MudIcon Icon="@Icons.Material.Filled.DoneAll" Color="Color.Success" Size="Size.Large" />
+                <MudText Class="summary-number">@Dashboard.EficienciaOperacional%</MudText>
+                <MudText Class="summary-label">Eficiencia operacional</MudText>
+            </div>
+        </MudItem>
+    </MudGrid>
+
+    <MudDivider Class="my-5" />
 
     <MudGrid>
-       <!-- gerar relatorio -->
-
-        <MudItem xs="12" md="3">
-
-            <MudPaper Class="report-card" Elevation="0">
-
-                <MudIcon Icon="@Icons.Material.Filled.Inventory2"
-                         Size="Size.Large"
-                         Class="report-icon" />
-
-                <MudText Typo="Typo.h6" Class="report-title">
-                    Estoque Crítico
-                </MudText>
-
-                <MudText Class="report-text">
-                    Produtos com quantidade baixa ou zerada
-                </MudText>
-
-                <MudButton Variant="Variant.Text"
-                           Color="Color.Info"
-                           Style="border-radius: 12px;">
-
-                    Gerar relatório
-
-                </MudButton>
-
-            </MudPaper>
-
+        <MudItem xs="12" md="4">
+            <MudText Class="summary-label">Total de produtos</MudText>
+            <MudText Class="summary-small">@Dashboard.TotalProdutos</MudText>
         </MudItem>
-
-<!-- produtos parados -->
-        <MudItem xs="12" md="3">
-
-            <MudPaper Class="report-card">
-
-                <MudIcon Icon="@Icons.Material.Filled.WarningAmber"
-                         Size="Size.Large"
-                         Class="report-icon warning" />
-
-                <MudText Typo="Typo.h6" Class="report-title">
-                    Produtos Parados
-                </MudText>
-
-                <MudText Class="report-text">
-                    Itens sem movimentação recente
-                </MudText>
-
-                <MudButton Variant="Variant.Text"
-                           Color="Color.Warning"
-                           Style="border-radius: 12px;">
-
-                    Gerar relatório
-
-                </MudButton>
-
-            </MudPaper>
-
+        <MudItem xs="12" md="4">
+            <MudText Class="summary-label">Total de orcamentos</MudText>
+            <MudText Class="summary-small">@Dashboard.TotalOrcamentos</MudText>
         </MudItem>
-
-<!-- horario de pico -->
-        <MudItem xs="12" md="3">
-
-            <MudPaper Class="report-card">
-
-                <MudIcon Icon="@Icons.Material.Filled.Schedule"
-                         Size="Size.Large"
-                         Class="report-icon success" />
-
-                <MudText Typo="Typo.h6" Class="report-title">
-                    Horários de Pico
-                </MudText>
-
-                <MudText Class="report-text">
-                    Períodos com maior fluxo de vendas
-                </MudText>
-
-                <MudButton Variant="Variant.Text"
-                           Color="Color.Success"
-                           Style="border-radius: 12px;">
-
-                    Gerar relatório
-
-                </MudButton>
-
-            </MudPaper>
-
+        <MudItem xs="12" md="4">
+            <MudText Class="summary-label">Valor em estoque</MudText>
+            <MudText Class="summary-small">@Dashboard.ValorTotalEstoque.ToString("C", CulturaBrasil)</MudText>
         </MudItem>
-<!-- desempenho geral -->
-        <MudItem xs="12" md="3">
-
-            <MudPaper Class="report-card">
-
-                <MudIcon Icon="@Icons.Material.Filled.Assessment"
-                         Size="Size.Large"
-                         Class="report-icon danger" />
-
-                <MudText Typo="Typo.h6" Class="report-title">
-                    Desempenho Geral
-                </MudText>
-
-                <MudText Class="report-text">
-                    Eficiência operacional do sistema
-                </MudText>
-
-                <MudButton Variant="Variant.Text"
-                           Color="Color.Error"
-                           Style="border-radius: 12px;">
-
-                    Gerar relatório
-
-                </MudButton>
-
-            </MudPaper>
-
-        </MudItem>
-
     </MudGrid>
-
-    <!-- ANALISES -->
-
-    <MudGrid Class="mt-4">
-
-        <MudItem xs="12" md="6">
-
-            <MudPaper Class="analysis-box" Elevation="0">
-
-                <MudText Typo="Typo.h5" Class="section-title">
-                    Produtos com Baixa Saída
-                </MudText>
-
-                <div class="analysis-item">
-                    <span>Mouse Gamer RGB</span>
-
-                    <MudChip T="string" Color="Color.Warning">
-                        3 vendas
-                    </MudChip>
-                </div>
-
-                <div class="analysis-item">
-                    <span>Teclado Mecânico</span>
-
-                    <MudChip T="string" Color="Color.Warning">
-                        2 vendas
-                    </MudChip>
-                </div>
-
-                <div class="analysis-item">
-                    <span>Headset Pro X</span>
-
-                    <MudChip T="string" Color="Color.Error">
-                        Sem vendas
-                    </MudChip>
-                </div>
-
-            </MudPaper>
-
-        </MudItem>
-
-        <MudItem xs="12" md="6">
-
-            <MudPaper Class="analysis-box">
-
-                <MudText Typo="Typo.h5" Class="section-title">
-                    Produtos Mais Vendidos
-                </MudText>
-
-                <div class="analysis-item">
-                    <span>Mouse Office</span>
-
-                    <MudChip T="string" Color="Color.Success">
-                        128 vendas
-                    </MudChip>
-                </div>
-
-                <div class="analysis-item">
-                    <span>Notebook Dell</span>
-
-                    <MudChip T="string" Color="Color.Success">
-                        96 vendas
-                    </MudChip>
-                </div>
-
-                <div class="analysis-item">
-                    <span>Monitor LG</span>
-
-                    <MudChip T="string" Color="Color.Info">
-                        74 vendas
-                    </MudChip>
-                </div>
-
-            </MudPaper>
-
-        </MudItem>
-
-    </MudGrid>
-
-    <!-- ALERTAS -->
-
-    <MudPaper Class="alerts-box mt-4" Elevation="0">
-
-        <MudText Typo="Typo.h5" Class="section-title">
-            Alertas Inteligentes
-        </MudText>
-
-        <div class="alert-item">
-
-            <MudIcon Icon="@Icons.Material.Filled.Warning"
-                     Color="Color.Warning" />
-
-            <span>
-                5 produtos estão próximos de acabar no estoque
-            </span>
-
-        </div>
-
-        <div class="alert-item">
-
-            <MudIcon Icon="@Icons.Material.Filled.Error"
-                     Color="Color.Error" />
-
-            <span>
-                Produto “Notebook Acer” está sem movimentação há 30 dias
-            </span>
-
-        </div>
-
-        <div class="alert-item">
-
-            <MudIcon Icon="@Icons.Material.Filled.Info"
-                     Color="Color.Info" />
-
-            <span>
-                Pico de vendas identificado entre 18h e 21h
-            </span>
-
-        </div>
-
-    </MudPaper>
-
-    <!-- RESUMO OPERACIONAL -->
-
-    <MudPaper Class="summary-box mt-4" Elevation="0">
-
-        <MudText Typo="Typo.h5" Class="section-title">
-            Resumo Operacional
-        </MudText>
-
-        <MudGrid>
-
-            <MudItem xs="12" md="4">
-
-                <div class="summary-card">
-
-                    <MudIcon Icon="@Icons.Material.Filled.AccessTime"
-                             Color="Color.Info"
-                             Size="Size.Large" />
-
-                    <MudText Class="summary-number">
-                        18 min
-                    </MudText>
-
-                    <MudText Class="summary-label">
-                        Tempo médio de atendimento
-                    </MudText>
-
-                </div>
-
-            </MudItem>
-
-            <MudItem xs="12" md="4">
-
-                <div class="summary-card">
-
-                    <MudIcon Icon="@Icons.Material.Filled.Inventory"
-                             Color="Color.Warning"
-                             Size="Size.Large" />
-
-                    <MudText Class="summary-number">
-                        8
-                    </MudText>
-
-                    <MudText Class="summary-label">
-                        Produtos em falta
-                    </MudText>
-
-                </div>
-
-            </MudItem>
-
-            <MudItem xs="12" md="4">
-
-                <div class="summary-card">
-
-                    <MudIcon Icon="@Icons.Material.Filled.DoneAll"
-                             Color="Color.Success"
-                             Size="Size.Large" />
-
-                    <MudText Class="summary-number">
-                        96%
-                    </MudText>
-
-                    <MudText Class="summary-label">
-                        Eficiência operacional
-                    </MudText>
-
-                </div>
-
-            </MudItem>
-
-        </MudGrid>
-
-    </MudPaper>
-
+</MudPaper>
 
 <style>
-
 .report-card {
     padding: 28px 24px;
     border-radius: 18px;
@@ -349,6 +182,7 @@
     border: 1px solid rgba(255,255,255,0.07);
     backdrop-filter: blur(8px);
     transition: 0.3s ease;
+    min-height: 225px;
 }
 
 .report-card:hover {
@@ -366,7 +200,7 @@
 
 .report-icon.warning { color: #FACC15; }
 .report-icon.success { color: #22C55E; }
-.report-icon.danger  { color: #EF4444; }
+.report-icon.danger { color: #EF4444; }
 
 .report-title {
     color: white !important;
@@ -383,21 +217,20 @@
 }
 
 .section-title {
-
     color: white;
     margin-bottom: 20px;
 }
 
-.analysis-box {
+.analysis-box, .alerts-box, .summary-box {
     padding: 28px 24px;
     border-radius: 18px;
     background: rgba(255,255,255,0.04) !important;
     border: 1px solid rgba(255,255,255,0.07);
     backdrop-filter: blur(8px);
-    transition: 0.5s ease;
+    transition: 0.3s ease;
 }
 
-.analysis-box:hover {
+.analysis-box:hover, .alerts-box:hover, .summary-box:hover {
     border-color: rgba(66,165,245,0.25);
     box-shadow: 0 12px 32px rgba(0,0,0,0.25);
 }
@@ -406,6 +239,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 16px;
     padding: 12px 0;
     border-bottom: 1px solid rgba(255,255,255,0.07);
     color: rgba(255,255,255,0.80);
@@ -416,23 +250,9 @@
     border-bottom: none;
 }
 
-.analysis-box .section-title {
+.analysis-box .section-title, .alerts-box .section-title, .summary-box .section-title {
     font-weight: 800;
     margin-bottom: 16px;
-}
-
-.alerts-box {
-    padding: 28px 24px;
-    border-radius: 18px;
-    background: rgba(255,255,255,0.04) !important;
-    border: 1px solid rgba(255,255,255,0.07);
-    backdrop-filter: blur(8px);
-    transition: 0.3s ease;
-}
-
-.alerts-box:hover {
-    border-color: rgba(66,165,245,0.25);
-    box-shadow: 0 12px 32px rgba(0,0,0,0.25);
 }
 
 .alert-item {
@@ -450,24 +270,6 @@
     border-bottom: none;
 }
 
-.alerts-box .section-title {
-    font-weight: 800;
-    margin-bottom: 16px;
-}
-.summary-box {
-    padding: 28px 24px;
-    border-radius: 18px;
-    background: rgba(255,255,255,0.04) !important;
-    border: 1px solid rgba(255,255,255,0.07);
-    backdrop-filter: blur(8px);
-    transition: 0.3s ease;
-}
-
-.summary-box:hover {
-    border-color: rgba(66,165,245,0.25);
-    box-shadow: 0 12px 32px rgba(0,0,0,0.25);
-}
-
 .summary-card {
     padding: 20px;
     border-radius: 14px;
@@ -475,6 +277,7 @@
     border: 1px solid rgba(255,255,255,0.07);
     text-align: center;
     transition: 0.3s ease;
+    min-height: 160px;
 }
 
 .summary-card:hover {
@@ -496,8 +299,83 @@
     line-height: 1.5;
 }
 
-.summary-box .section-title {
-    font-weight: 800;
-    margin-bottom: 16px;
+.summary-small {
+    color: white;
+    font-size: 22px;
+    font-weight: 700;
 }
 </style>
+
+@code {
+    private static readonly CultureInfo CulturaBrasil = new("pt-BR");
+    private RelatorioDashboard? dashboard;
+    private string? mensagemErro;
+    private string? relatorioSelecionado;
+    private string tituloRelatorioSelecionado = string.Empty;
+    private string descricaoRelatorioSelecionado = string.Empty;
+    private bool carregando;
+
+    private RelatorioDashboard Dashboard => dashboard ?? new RelatorioDashboard();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregarDashboardAsync();
+    }
+
+    private async Task CarregarDashboardAsync()
+    {
+        try
+        {
+            carregando = true;
+            dashboard = await RelatorioService.ObterDashboardAsync();
+        }
+        catch (Exception ex)
+        {
+            mensagemErro = $"Nao foi possivel carregar os relatorios: {ex.Message}";
+        }
+        finally
+        {
+            carregando = false;
+        }
+    }
+
+    private void SelecionarRelatorio(string tipo)
+    {
+        relatorioSelecionado = tipo;
+        (tituloRelatorioSelecionado, descricaoRelatorioSelecionado) = tipo switch
+        {
+            "estoque" => ("Estoque Critico", $"{Dashboard.ProdutosCriticos} produto(s) estao com estoque menor ou igual a 5 unidades."),
+            "parados" => ("Produtos Parados", $"{Dashboard.ProdutosParados.Count} produto(s) nao tiveram movimentacao nos ultimos 30 dias ou nunca foram usados em orcamentos."),
+            "pico" => ("Horarios de Pico", $"O maior volume de orcamentos foi identificado no periodo {Dashboard.HorarioPico}."),
+            "desempenho" => ("Desempenho Geral", $"O sistema esta com {Dashboard.EficienciaOperacional}% de orcamentos finalizados em relacao ao total registrado."),
+            _ => (string.Empty, string.Empty)
+        };
+    }
+
+    private async Task ExportarRelatorioAsync()
+    {
+        try
+        {
+            var csv = await RelatorioService.ExportarCsvAsync();
+            var base64 = Convert.ToBase64String(Encoding.UTF8.GetPreamble().Concat(Encoding.UTF8.GetBytes(csv)).ToArray());
+            await JS.InvokeVoidAsync("eval", $$"""
+                const link = document.createElement('a');
+                link.href = 'data:text/csv;base64,{{base64}}';
+                link.download = 'relatorio-vertex.csv';
+                link.click();
+            """);
+            Snackbar.Add("Relatorio exportado com sucesso.", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    private static IEnumerable<ProdutoRelatorioItem> ItensOuVazio(List<ProdutoRelatorioItem> itens)
+    {
+        return itens.Count == 0
+            ? [new ProdutoRelatorioItem { Nome = "Sem dados disponiveis", Movimentacoes = 0 }]
+            : itens;
+    }
+}

@@ -1,184 +1,184 @@
 @page "/usuarios"
+@inject UsuarioService UsuarioService
+@inject ISnackbar Snackbar
 
-<PageTitle>Vertex | Usuários</PageTitle>
+<PageTitle>Vertex | Usuarios</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.False" Class="usuarios-page">
-
     <div class="usuarios-header">
-
         <div>
-
-            <MudText Typo="Typo.h3" Class="title-text">
-                Usuários
-            </MudText>
-
+            <MudText Typo="Typo.h3" Class="title-text">Usuarios</MudText>
             <MudText Typo="Typo.body1" Class="subtitle-text">
-                Gerencie administradores e funcionários do sistema
+                Gerencie administradores e funcionarios do sistema
             </MudText>
-
         </div>
 
-        <div class="header-buttons">
-
-            <MudButton Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       FullWidth="true"
-                       Style="border-radius: 12px; font-weight:800; color:white;"
-            Buscar
-                       StartIcon="@Icons.Material.Filled.PersonAdd">
-
-                Criar Usuário
-
-            </MudButton>
-
-        </div>
-
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   Style="border-radius: 12px; font-weight:800; color:white;"
+                   StartIcon="@Icons.Material.Filled.PersonAdd"
+                   OnClick="NovoUsuario">
+            Criar Usuario
+        </MudButton>
     </div>
 
-    <MudPaper Elevation="8" Class="usuarios-box" Style="overflow-x: auto;">
+    <MudPaper Class="filter-box" Elevation="0">
+        <MudTextField T="string"
+                      Value="@busca"
+                      Placeholder="Buscar por nome, email, login ou permissao"
+                      Variant="Variant.Outlined"
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      Immediate="true"
+                      DebounceInterval="350"
+                      ValueChanged="BuscarAsync" />
+    </MudPaper>
 
+    @if (!string.IsNullOrWhiteSpace(mensagemErro))
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">@mensagemErro</MudAlert>
+    }
+
+    <MudPaper Elevation="8" Class="usuarios-box">
         <MudTable Items="@usuarios"
                   Hover="true"
+                  Loading="@carregando"
                   Striped="false"
                   Bordered="false"
                   Dense="false"
-                  Class="usuarios-table">
-
+                  Class="usuarios-table usuarios-list-table"
+                  RowClass="custom-row">
             <HeaderContent>
-
-                <MudTh>Usuário</MudTh>
-
+                <MudTh>Usuario</MudTh>
                 <MudTh Class="hide-mobile">Email</MudTh>
-
-                <MudTh>Permissão</MudTh>
-
-                <MudTh>Ações</MudTh>
-
+                <MudTh>Permissao</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Acoes</MudTh>
             </HeaderContent>
-
             <RowTemplate>
-
-                <MudTr Class="custom-row">
-
                     <MudTd>
-
                         <div class="user-info">
-
-                            <MudAvatar Size="Size.Medium"
-                                       Color="Color.Primary">
-
-                                @context.Nome.Substring(0, 1)
-
+                            <MudAvatar Size="Size.Medium" Color="Color.Primary">
+                                @PrimeiraLetra(context.Nome)
                             </MudAvatar>
-
                             <div>
-
-                                <MudText Typo="Typo.body1">
-                                    @context.Nome
-                                </MudText>
-
-                                <MudText Typo="Typo.caption"
-                                         Class="user-id">
-
-                                    ID: @context.Id
-
-                                </MudText>
-
-                                <!-- Email visível só no mobile, abaixo do nome -->
-                                <MudText Typo="Typo.caption"
-                                         Class="user-email-mobile">
-
-                                    @context.Email
-
-                                </MudText>
-
+                                <MudText Typo="Typo.body1">@context.Nome</MudText>
+                                <MudText Typo="Typo.caption" Class="user-id">Login: @context.Login</MudText>
+                                <MudText Typo="Typo.caption" Class="user-email-mobile">@context.Email</MudText>
                             </div>
-
                         </div>
-
                     </MudTd>
-
-                    <MudTd Class="hide-mobile">
-                        @context.Email
-                    </MudTd>
-
+                    <MudTd Class="hide-mobile">@context.Email</MudTd>
                     <MudTd>
-
-                        @if (context.Tipo == "Admin")
-                        {
-                            <MudChip T="string"
-                                     Color="Color.Error"
-                                     Variant="Variant.Filled"
-                                     Size="Size.Small">
-
-                                Administrador
-
-                            </MudChip>
-                        }
-                        else
-                        {
-                            <MudChip T="string"
-                                     Color="Color.Info"
-                                     Variant="Variant.Filled"
-                                     Size="Size.Small">
-
-                                Funcionário
-
-                            </MudChip>
-                        }
-
+                        <MudChip T="string"
+                                 Color="@(context.IsAdmin ? Color.Error : Color.Info)"
+                                 Variant="Variant.Filled"
+                                 Size="Size.Small">
+                            @(context.IsAdmin ? "Administrador" : "Funcionario")
+                        </MudChip>
                     </MudTd>
-
                     <MudTd>
-
-                        @if (context.Tipo != "Admin")
-                        {
-                            <div class="acoes-area">
-
-                                <MudTooltip Text="Editar">
-
-                                    <MudIconButton Icon="@Icons.Material.Filled.Edit"
-                                                   Color="Color.Default"
-                                                   Style="color: #42A5F5;"
-                                                   Size="Size.Small"
-                                                   Class="action-btn" />
-
-                                </MudTooltip>
-
-                                <MudTooltip Text="Excluir">
-
-                                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                                                   Color="Color.Error"
-                                                   Size="Size.Small"
-                                                   Class="action-btn" />
-
-                                </MudTooltip>
-
-                            </div>
-                        }
-                        else
-                        {
-                            <MudText Class="admin-text">
-                                Protegido
-                            </MudText>
-                        }
-
+                        <MudChip T="string"
+                                 Color="@(context.Ativo ? Color.Success : Color.Default)"
+                                 Variant="Variant.Filled"
+                                 Size="Size.Small">
+                            @(context.Ativo ? "Ativo" : "Inativo")
+                        </MudChip>
                     </MudTd>
+                    <MudTd>
+                        <div class="acoes-area">
+                            <MudTooltip Text="Editar">
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                               Color="Color.Default"
+                                               Style="color: #42A5F5;"
+                                               Size="Size.Small"
+                                               Class="action-btn"
+                                               Disabled="@context.IsAdmin"
+                                               OnClick="@(() => EditarUsuarioAsync(context.Id))" />
+                            </MudTooltip>
 
-                </MudTr>
-
+                            <MudTooltip Text="Inativar">
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                               Color="Color.Error"
+                                               Size="Size.Small"
+                                               Class="action-btn"
+                                               Disabled="@(!context.Ativo || context.IsAdmin)"
+                                               OnClick="@(() => InativarUsuarioAsync(context.Id))" />
+                            </MudTooltip>
+                        </div>
+                    </MudTd>
             </RowTemplate>
-
+            <NoRecordsContent>
+                <MudText Class="empty-text">Nenhum usuario encontrado.</MudText>
+            </NoRecordsContent>
         </MudTable>
-
     </MudPaper>
 
+    @if (formAberto)
+    {
+        <div class="modal-backdrop">
+            <MudPaper Class="user-form" Elevation="12">
+                <div class="form-header">
+                    <MudText Typo="Typo.h5">@(form.Id.HasValue ? "Editar usuario" : "Criar usuario")</MudText>
+                    <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="FecharFormulario" />
+                </div>
+
+                <MudForm @ref="mudForm">
+                    <MudGrid>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="form.Nome" Label="Nome" Variant="Variant.Outlined" Required="true" MaxLength="20" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="form.Cpf" Label="CPF" Variant="Variant.Outlined" Required="true" MaxLength="14" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="form.Telefone" Label="Telefone" Variant="Variant.Outlined" Required="true" MaxLength="20" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="form.Email" Label="Email" Variant="Variant.Outlined" Required="true" MaxLength="120" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudTextField @bind-Value="form.Endereco" Label="Endereco" Variant="Variant.Outlined" Required="true" MaxLength="100" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="form.Login" Label="Login" Variant="Variant.Outlined" Required="true" MaxLength="36" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="form.Senha"
+                                          Label="@(form.Id.HasValue ? "Nova senha (opcional)" : "Senha")"
+                                          Variant="Variant.Outlined"
+                                          InputType="InputType.Password"
+                                          Required="@(!form.Id.HasValue)"
+                                          MaxLength="50" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudSelect @bind-Value="form.Cargo" Label="Permissao" Variant="Variant.Outlined">
+                                <MudSelectItem Value="@("Admin")">Administrador</MudSelectItem>
+                                <MudSelectItem Value="@("Funcionario")">Funcionario</MudSelectItem>
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="12" sm="6" Class="d-flex align-center">
+                            <MudSwitch @bind-Value="form.Ativo" Color="Color.Success" Label="Usuario ativo" />
+                        </MudItem>
+                    </MudGrid>
+                </MudForm>
+
+                <div class="form-actions">
+                    <MudButton Variant="Variant.Text" OnClick="FecharFormulario">Cancelar</MudButton>
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Disabled="@salvando"
+                               OnClick="SalvarUsuarioAsync">
+                        Salvar
+                    </MudButton>
+                </div>
+            </MudPaper>
+        </div>
+    }
 </MudContainer>
 
 <style>
-
-html,
-body {
+html, body {
     margin: 0;
     padding: 0;
     min-height: 100%;
@@ -188,19 +188,14 @@ body {
 .usuarios-page {
     min-height: 100vh;
     padding: 40px;
-    background: linear-gradient(
-        135deg,
-        #071D36,
-        #0B3A6A,
-        #4FC3F7
-    );
+    background: linear-gradient(135deg, #071D36, #0B3A6A, #4FC3F7);
 }
 
 .usuarios-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 35px;
+    margin-bottom: 24px;
     gap: 20px;
     flex-wrap: wrap;
 }
@@ -215,10 +210,11 @@ body {
     margin-top: 6px;
 }
 
-.header-buttons {
-    display: flex;
-    align-items: center;
-    gap: 15px;
+.filter-box {
+    background: rgba(18,56,92,0.88) !important;
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 18px;
 }
 
 .usuarios-box {
@@ -236,14 +232,12 @@ body {
     gap: 15px;
 }
 
-.user-id {
-    color: rgba(255,255,255,0.55);
+.user-id, .user-email-mobile {
+    color: rgba(255,255,255,0.60);
 }
 
-/* Email visível só no mobile */
 .user-email-mobile {
     display: none;
-    color: rgba(255,255,255,0.6);
     margin-top: 2px;
 }
 
@@ -271,15 +265,26 @@ body {
     background-color: rgba(255,255,255,0.08);
 }
 
-.admin-text {
-    color: rgba(255,255,255,0.5);
-    font-size: 14px;
-    font-weight: 500;
+.empty-text {
+    color: rgba(255,255,255,0.72);
+    padding: 18px;
 }
 
 .mud-table {
     background: transparent !important;
+    width: 100% !important;
+    table-layout: fixed;
 }
+
+.usuarios-table {
+    min-width: 820px;
+}
+
+.usuarios-list-table th:nth-child(1), .usuarios-list-table td:nth-child(1) { width: 34%; }
+.usuarios-list-table th:nth-child(2), .usuarios-list-table td:nth-child(2) { width: 26%; }
+.usuarios-list-table th:nth-child(3), .usuarios-list-table td:nth-child(3) { width: 16%; }
+.usuarios-list-table th:nth-child(4), .usuarios-list-table td:nth-child(4) { width: 12%; }
+.usuarios-list-table th:nth-child(5), .usuarios-list-table td:nth-child(5) { width: 12%; }
 
 .mud-table-head th {
     color: white !important;
@@ -292,151 +297,205 @@ body {
 .mud-table-body td {
     color: white !important;
     border-bottom: 1px solid rgba(255,255,255,0.06);
+    vertical-align: middle;
+    overflow-wrap: anywhere;
 }
 
-.mud-button-filled-primary {
+.mud-button-filled-primary, .mud-avatar {
     background-color: #3B82F6 !important;
     color: white !important;
 }
 
-.mud-avatar {
-    background: #3B82F6 !important;
-    color: white !important;
-    font-weight: bold;
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.68);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    z-index: 1300;
 }
 
-/* ── TABLET (até 900px) ── */
-@@media (max-width: 900px) {
+.user-form {
+    width: min(900px, 100%);
+    max-height: 92vh;
+    overflow-y: auto;
+    padding: 28px;
+    border-radius: 16px;
+}
 
+.form-header, .form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.form-header {
+    margin-bottom: 24px;
+}
+
+.form-actions {
+    justify-content: flex-end;
+    margin-top: 24px;
+}
+
+@@media (max-width: 900px) {
     .usuarios-page {
         padding: 20px;
     }
 
-    .usuarios-header {
-        flex-direction: column;
-        align-items: flex-start;
-        margin-bottom: 24px;
-    }
-
-    .header-buttons {
-        width: 100%;
-        justify-content: flex-end;
-    }
-
-    .usuarios-box {
-        padding: 12px;
-        border-radius: 14px;
-    }
-
-    /* Esconde coluna de email — aparece abaixo do nome */
     .hide-mobile {
         display: none !important;
+    }
+
+    .usuarios-table {
+        min-width: 620px;
     }
 
     .user-email-mobile {
         display: block;
     }
-
-    .title-text {
-        font-size: 1.8rem !important;
-    }
 }
 
-/* ── MOBILE (até 480px) ── */
 @@media (max-width: 480px) {
-
     .usuarios-page {
         padding: 12px;
-    }
-
-    .usuarios-header {
-        margin-bottom: 16px;
-        gap: 12px;
     }
 
     .title-text {
         font-size: 1.5rem !important;
     }
 
-    .subtitle-text {
-        font-size: 13px !important;
-    }
-
-    .usuarios-box {
-        padding: 8px;
+    .usuarios-box, .filter-box {
+        padding: 10px;
         border-radius: 12px;
     }
-
-    .user-info {
-        gap: 10px;
-    }
-
-    .mud-avatar {
-        width: 36px !important;
-        height: 36px !important;
-        font-size: 14px !important;
-        min-width: 36px !important;
-    }
-
-    .mud-table-head th {
-        font-size: 13px !important;
-        padding: 8px 6px !important;
-    }
-
-    .mud-table-body td {
-        font-size: 13px !important;
-        padding: 8px 6px !important;
-    }
-
-    .admin-text {
-        font-size: 12px;
-    }
-
-    .acoes-area {
-        gap: 2px;
-    }
 }
-
 </style>
 
 @code {
+    private readonly List<UsuarioListItem> usuarios = [];
+    private MudForm? mudForm;
+    private UsuarioFormModel form = new();
+    private string? busca;
+    private string? mensagemErro;
+    private bool carregando;
+    private bool salvando;
+    private bool formAberto;
 
-    public class Usuario
+    protected override async Task OnInitializedAsync()
     {
-        public int Id { get; set; }
-
-        public string Nome { get; set; } = string.Empty;
-
-        public string Email { get; set; } = string.Empty;
-
-        public string Tipo { get; set; } = string.Empty;
+        await CarregarUsuariosAsync();
     }
 
-    private List<Usuario> usuarios = new()
+    private async Task BuscarAsync(string termo)
     {
-        new Usuario
-        {
-            Id = 1,
-            Nome = "João Pedro",
-            Email = "joao@vertex.com",
-            Tipo = "Admin"
-        },
+        busca = termo;
+        await CarregarUsuariosAsync();
+    }
 
-        new Usuario
+    private async Task CarregarUsuariosAsync()
+    {
+        try
         {
-            Id = 2,
-            Nome = "Carlos Silva",
-            Email = "carlos@vertex.com",
-            Tipo = "Funcionario"
-        },
-
-        new Usuario
-        {
-            Id = 3,
-            Nome = "Marcos Lima",
-            Email = "marcos@vertex.com",
-            Tipo = "Funcionario"
+            carregando = true;
+            mensagemErro = null;
+            usuarios.Clear();
+            usuarios.AddRange(await UsuarioService.ListarAsync(busca));
         }
-    };
+        catch (Exception ex)
+        {
+            mensagemErro = $"Nao foi possivel carregar usuarios: {ex.Message}";
+        }
+        finally
+        {
+            carregando = false;
+        }
+    }
 
+    private void NovoUsuario()
+    {
+        form = new UsuarioFormModel();
+        formAberto = true;
+    }
+
+    private async Task EditarUsuarioAsync(Guid id)
+    {
+        var usuario = await UsuarioService.ObterAsync(id);
+        if (usuario is null)
+        {
+            Snackbar.Add("Usuario nao encontrado.", Severity.Warning);
+            return;
+        }
+
+        form = usuario;
+        formAberto = true;
+    }
+
+    private async Task SalvarUsuarioAsync()
+    {
+        if (mudForm is null)
+        {
+            return;
+        }
+
+        await mudForm.ValidateAsync();
+        if (!mudForm.IsValid)
+        {
+            return;
+        }
+
+        try
+        {
+            salvando = true;
+
+            if (form.Id.HasValue)
+            {
+                await UsuarioService.AtualizarAsync(form.Id.Value, form);
+                Snackbar.Add("Usuario atualizado com sucesso.", Severity.Success);
+            }
+            else
+            {
+                await UsuarioService.CriarAsync(form);
+                Snackbar.Add("Usuario criado com sucesso.", Severity.Success);
+            }
+
+            formAberto = false;
+            await CarregarUsuariosAsync();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+        finally
+        {
+            salvando = false;
+        }
+    }
+
+    private async Task InativarUsuarioAsync(Guid id)
+    {
+        try
+        {
+            await UsuarioService.InativarAsync(id);
+            Snackbar.Add("Usuario inativado com sucesso.", Severity.Success);
+            await CarregarUsuariosAsync();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    private void FecharFormulario()
+    {
+        formAberto = false;
+    }
+
+    private static string PrimeiraLetra(string valor)
+    {
+        return string.IsNullOrWhiteSpace(valor) ? "?" : valor.Trim()[0].ToString().ToUpperInvariant();
+    }
 }

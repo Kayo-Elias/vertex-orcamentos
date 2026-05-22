@@ -1,389 +1,116 @@
-@page "/estoque";
+@page "/estoque"
+@using System.Globalization
 @using VertexOrcamentos.Components.Shared
+@inject EstoqueService EstoqueService
+@inject ISnackbar Snackbar
 
 <PageTitle>Vertex | Estoque</PageTitle>
 
-<!-- titulo -->
+<PageHeader Titulo="Estoque" Subtitulo="Gerencie e acompanhe o estoque da empresa de forma prática e organizada." Imagem="https://www.shutterstock.com/image-photo/business-analyst-managing-data-infrastructure-600nw-2740363657.jpg" ImagemPosicao="center 53%" />
 
-<PageHeader
-    Titulo="Estoque"
-    Subtitulo="Gerencie e acompanhe o estoque da empresa de forma prática e organizada." 
-    Imagem="https://www.shutterstock.com/image-photo/business-analyst-managing-data-infrastructure-600nw-2740363657.jpg"
-    ImagemPosicao="center 53%"/>
-<!-- botoes de criar, editar e excluir -->
-
-<MudStack Row="true"
-          Spacing="2"
-          Wrap="Wrap.Wrap"
-          Class="mb-6">
-
-    <MudButton
-        Variant="Variant.Filled"
-        Color="Color.Success"
-        StartIcon="@Icons.Material.Filled.Add"
-        Style="border-radius:12px; font-weight:800;">
-        Criar
-    </MudButton>
-
-    <MudButton 
-        Variant="Variant.Filled"
-        Color="Color.Primary"
-        StartIcon="@Icons.Material.Filled.Edit"
-        Style="border-radius:12px; font-weight:800; color:white;">
-        Editar
-    </MudButton>
-    
-    <MudButton 
-        Variant="Variant.Filled"
-        Color="Color.Error"
-        StartIcon="@Icons.Material.Filled.Delete"
-        Style="border-radius:12px; font-weight:800;">
-        Excluir
-    </MudButton>
-
+<MudStack Row="true" Spacing="2" Wrap="Wrap.Wrap" Class="mb-6">
+    <MudButton Variant="Variant.Filled" Color="Color.Success" StartIcon="@Icons.Material.Filled.Add" Style="border-radius:12px; font-weight:800;" OnClick="NovoProduto">Criar</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Style="border-radius:12px; font-weight:800; color:white;" Disabled="@(selecionado is null)" OnClick="EditarSelecionadoAsync">Editar</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete" Style="border-radius:12px; font-weight:800;" Disabled="@(selecionado is null)" OnClick="ExcluirSelecionadoAsync">Excluir</MudButton>
 </MudStack>
 
-<!-- cards de resumo -->
-
 <MudGrid Class="mt-2 mb-4">
-
-    <MudItem xs="12" sm="6" md="3">
-        <MudPaper Class="pa-4"
-                  Style="background:#111827; border-radius:16px;">
-
-            <MudText Typo="Typo.body2" Style="color:#94A3B8;">
-
-                Total de Produtos em Estoque
-            </MudText>
-            <MudText Typo="Typo.h4" Style="font-weight:700; color:white;">
-                128
-            </MudText>
-
-        </MudPaper>
-    </MudItem>
-
-    <MudItem xs="12" sm="6" md="3">
-        <MudPaper Class="pa-4"
-                  Style="background:#111827; border-radius:16px;">
-
-            <MudText Typo="Typo.body2" Style="color:#94A3B8;">
-                Produtos Ativos
-            </MudText>
-
-            <MudText Typo="Typo.h4" Style="font-weight:700; color:#22C55E;">
-                98
-            </MudText>
-
-        </MudPaper>
-    </MudItem>
-
-    <MudItem xs="12" sm="6" md="3">
-        <MudPaper Class="pa-4"
-                  Style="background:#111827; border-radius:16px;">
-
-            <MudText Typo="Typo.body2" Style="color:#94A3B8;">
-                Produtos com baixo estoque
-            </MudText>
-
-            <MudText Typo="Typo.h4" Style="font-weight:700; color:#FACC15;">
-                12
-            </MudText>
-
-        </MudPaper>
-    </MudItem>
-
-    <MudItem xs="12" sm="6" md="3">
-        <MudPaper Class="pa-4"
-                  Style="background:#111827; border-radius:16px;">
-
-            <MudText Typo="Typo.body2" Style="color:#94A3B8;">
-                Valor Total em Estoque
-            </MudText>
-
-            <MudText Typo="Typo.h4" Style="font-weight:700; color:#3B82F6;">
-                R$ 45.320,00
-            </MudText>
-
-        </MudPaper>
-    </MudItem>
-
-
+    <MudItem xs="12" sm="6" md="3"><MudPaper Class="pa-4" Style="background:#111827; border-radius:16px;"><MudText Typo="Typo.body2" Style="color:#94A3B8;">Total de Produtos em Estoque</MudText><MudText Typo="Typo.h4" Style="font-weight:700; color:white;">@resumo.TotalProdutos</MudText></MudPaper></MudItem>
+    <MudItem xs="12" sm="6" md="3"><MudPaper Class="pa-4" Style="background:#111827; border-radius:16px;"><MudText Typo="Typo.body2" Style="color:#94A3B8;">Produtos Ativos</MudText><MudText Typo="Typo.h4" Style="font-weight:700; color:#22C55E;">@resumo.ProdutosAtivos</MudText></MudPaper></MudItem>
+    <MudItem xs="12" sm="6" md="3"><MudPaper Class="pa-4" Style="background:#111827; border-radius:16px;"><MudText Typo="Typo.body2" Style="color:#94A3B8;">Produtos com baixo estoque</MudText><MudText Typo="Typo.h4" Style="font-weight:700; color:#FACC15;">@resumo.BaixoEstoque</MudText></MudPaper></MudItem>
+    <MudItem xs="12" sm="6" md="3"><MudPaper Class="pa-4" Style="background:#111827; border-radius:16px;"><MudText Typo="Typo.body2" Style="color:#94A3B8;">Valor Total em Estoque</MudText><MudText Typo="Typo.h4" Style="font-weight:700; color:#3B82F6;">@resumo.ValorTotal.ToString("C", Cultura)</MudText></MudPaper></MudItem>
 </MudGrid>
 
-<!-- pesquisa e botao de buscar -->
-
-<MudPaper Class="pa-4 pa-sm-6"
-          Elevation="0"
-          Style="background-color:#111927; border-radius:16px;">
-
-    <MudStack Row="true"
-          Spacing="2"
-          Wrap="Wrap.Wrap"
-          AlignItems="AlignItems.Center">
-
-        <MudTextField T="string"
-                      Placeholder="Pesquisar produto"
-                      Variant="Variant.Outlined"
-                      Adornment="Adornment.Start"
-                      AdornmentIcon="@Icons.Material.Filled.Search"
-                      FullWidth="true" />
-
-        <MudButton Variant="Variant.Filled"
-           Color="Color.Primary"
-           FullWidth="true"
-           Style="border-radius: 12px; font-weight:800; color:white;">
-            Buscar  
-        </MudButton>
-
+<MudPaper Class="pa-4 pa-sm-6" Elevation="0" Style="background-color:#111927; border-radius:16px;">
+    <MudStack Row="true" Spacing="2" Wrap="Wrap.Wrap" AlignItems="AlignItems.Center">
+        <MudTextField T="string" Value="@busca" ValueChanged="BuscarAsync" Placeholder="Pesquisar produto" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" FullWidth="true" Immediate="true" DebounceInterval="350" />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Style="border-radius: 12px; font-weight:800; color:white;" OnClick="@(() => CarregarAsync())">Buscar</MudButton>
     </MudStack>
-
-  </MudPaper>
-
-  <!-- tabela -->
-
-<MudPaper Class="usuarios-box">
-
-    <MudTable Items="@clientes"
-              Hover="true"
-              Striped="false"
-              Bordered="false"
-              Dense="false"
-              Class="usuarios-table">
-
-        <HeaderContent>
-
-            <MudTh>ID</MudTh>
-
-            <MudTh>Categoria</MudTh>
-
-            <MudTh>Nome</MudTh>
-
-            <MudTh>Valor</MudTh>
-
-            <MudTh>Quantidade</MudTh>
-
-            <MudTh>Ações</MudTh>
-
-        </HeaderContent>
-
-        <RowTemplate>
-
-            <MudTr Class="custom-row">
-
-                <!-- ID -->
-                <MudTd>
-
-                    <div class="user-info">
-
-                        <MudAvatar Size="Size.Medium"
-                                   Color="Color.Primary">
-
-                            @context.Nome.Substring(0,1)
-
-                        </MudAvatar>
-
-                        <div>
-
-                            <MudText Typo="Typo.body1">
-                                #@context.Id
-                            </MudText>
-
-                            <MudText Typo="Typo.caption"
-                                     Class="user-id">
-
-                                Produto em estoque
-
-                            </MudText>
-
-                        </div>
-
-                    </div>
-
-                </MudTd>
-
-                <!-- Categoria -->
-                <MudTd>
-                    @context.Categoria
-                </MudTd>
-
-                <!-- Nome -->
-                <MudTd>
-                    @context.Nome
-                </MudTd>
-
-                <!-- Valor -->
-                <MudTd>
-
-                    <MudText Typo="Typo.body1"
-                             Style="font-weight:600;">
-
-                        R$ @context.Valor
-
-                    </MudText>
-
-                </MudTd>
-
-                <!-- Quantidade -->
-                <MudTd>
-
-                    <MudChip T="string"
-                             Color="Color.Info"
-                             Variant="Variant.Filled"
-                             Size="Size.Small">
-
-                        @context.Quantidade unidades
-
-                    </MudChip>
-
-                </MudTd>
-
-                <!-- Ações -->
-                <MudTd>
-
-                    <div class="acoes-area">
-
-                        <MudTooltip Text="Editar">
-
-                            <MudIconButton Icon="@Icons.Material.Filled.Edit"
-                                           Color="Color.Default"
-                                           Style="color: #42A5F5;"
-                                           Size="Size.Small"
-                                           Class="action-btn" />
-
-                        </MudTooltip>
-
-                        <MudTooltip Text="Excluir">
-
-                            <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                                           Color="Color.Error"
-                                           Size="Size.Small"
-                                           Class="action-btn" />
-
-                        </MudTooltip>
-
-                    </div>
-
-                </MudTd>
-
-            </MudTr>
-
-        </RowTemplate>
-
-    </MudTable>
-
 </MudPaper>
 
-<!-- estilos da pagina -->
+<MudPaper Class="usuarios-box">
+    <MudTable Items="@produtos" Hover="true" Loading="@carregando" Striped="false" Bordered="false" Dense="false" Class="usuarios-table estoque-table" RowClass="custom-row" @bind-SelectedItem="selecionado">
+        <HeaderContent><MudTh>ID</MudTh><MudTh>Categoria</MudTh><MudTh>Nome</MudTh><MudTh>Valor</MudTh><MudTh>Quantidade</MudTh><MudTh>Ações</MudTh></HeaderContent>
+        <RowTemplate>
+                <MudTd><div class="user-info"><MudAvatar Size="Size.Medium" Color="Color.Primary">@PrimeiraLetra(context.Nome)</MudAvatar><div><MudText Typo="Typo.body1">#@context.Codigo</MudText><MudText Typo="Typo.caption" Class="user-id">Produto em estoque</MudText></div></div></MudTd>
+                <MudTd>@context.Categoria</MudTd>
+                <MudTd>@context.Nome</MudTd>
+                <MudTd><MudText Typo="Typo.body1" Style="font-weight:600;">@context.Valor.ToString("C", Cultura)</MudText></MudTd>
+                <MudTd><MudChip T="string" Color="@(context.Quantidade <= 5 ? Color.Warning : Color.Info)" Variant="Variant.Filled" Size="Size.Small">@context.Quantidade @context.Unidade</MudChip></MudTd>
+                <MudTd><div class="acoes-area"><MudTooltip Text="Editar"><MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Default" Style="color: #42A5F5;" Size="Size.Small" Class="action-btn" OnClick="@(() => EditarProdutoAsync(context.Id))" /></MudTooltip><MudTooltip Text="Excluir"><MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" Class="action-btn" OnClick="@(() => ExcluirProdutoAsync(context.Id))" /></MudTooltip></div></MudTd>
+        </RowTemplate>
+    </MudTable>
+</MudPaper>
+
+@if (formAberto)
+{
+    <div class="modal-backdrop">
+        <MudPaper Class="form-box" Elevation="12">
+            <div class="form-header"><MudText Typo="Typo.h5">@(form.Id.HasValue ? "Editar produto" : "Criar produto")</MudText><MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="FecharForm" /></div>
+            <MudForm @ref="mudForm">
+                <MudGrid>
+                    <MudItem xs="12" sm="6"><MudTextField @bind-Value="form.Nome" Label="Nome" Variant="Variant.Outlined" Required="true" MaxLength="80" /></MudItem>
+                    <MudItem xs="12" sm="6"><MudTextField @bind-Value="form.Categoria" Label="Categoria" Variant="Variant.Outlined" Required="true" MaxLength="20" /></MudItem>
+                    <MudItem xs="12" sm="4"><MudNumericField @bind-Value="form.Valor" Label="Valor" Variant="Variant.Outlined" Min="0" /></MudItem>
+                    <MudItem xs="12" sm="4"><MudNumericField @bind-Value="form.Quantidade" Label="Quantidade" Variant="Variant.Outlined" Min="0" /></MudItem>
+                    <MudItem xs="12" sm="4"><MudTextField @bind-Value="form.Unidade" Label="Unidade" Variant="Variant.Outlined" Required="true" MaxLength="20" /></MudItem>
+                    <MudItem xs="12"><MudSwitch @bind-Value="form.Ativo" Color="Color.Success" Label="Produto ativo" /></MudItem>
+                </MudGrid>
+            </MudForm>
+            <div class="form-actions"><MudButton Variant="Variant.Text" OnClick="FecharForm">Cancelar</MudButton><MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SalvarAsync">Salvar</MudButton></div>
+        </MudPaper>
+    </div>
+}
 
 <style>
-
-.usuarios-box {
-    background: rgba(18,56,92,0.88) !important;
-    backdrop-filter: blur(10px);
-    border-radius: 18px;
-    padding: 20px;
-    box-shadow: 0 8px 30px rgba(78, 107, 120, 0.44);
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.user-id {
-    color: rgba(255,255,255,0.55);
-}
-
-.custom-row {
-    transition: 0.2s;
-}
-
-.custom-row:hover {
-    background-color: rgba(255,255,255,0.06) !important;
-}
-
-.acoes-area {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-}
-
-.action-btn {
-    transition: 0.2s;
-    border-radius: 10px;
-}
-
-.action-btn:hover {
-    transform: scale(1.1);
-    background-color: rgba(236, 173, 173, 0.08);
-}
-
-.mud-table {
-    background: rgba(22, 57, 109, 0.5) !important;
-}
-
-.mud-table-head th {
-    color: white !important;
-    font-size: 15px;
-    font-weight: 600;
-    border-bottom: 1px solid rgba(151, 179, 190, 0.48);
-}
-
-.mud-table-body td {
-    color: white !important;
-    border-bottom: 1px solid rgba(151, 179, 190, 0.48);
-}
-
-.mud-avatar {
-    background: #3B82F6 !important;
-    color: white !important;
-    font-weight: bold;
-}
-
-@@media (max-width: 768px) {
-
-    .user-info {
-        gap: 10px;
-    }
-
-    .mud-table-body td,
-    .mud-table-head th {
-        font-size: 13px;
-    }
-}
-
+.usuarios-box { background: rgba(18,56,92,0.88) !important; backdrop-filter: blur(10px); border-radius: 18px; padding: 20px; box-shadow: 0 8px 30px rgba(78, 107, 120, 0.44); overflow-x: auto; }
+.user-info { display: flex; align-items: center; gap: 15px; }
+.user-id { color: rgba(255,255,255,0.55); }
+.custom-row { transition: 0.2s; }
+.custom-row:hover { background-color: rgba(255,255,255,0.06) !important; }
+.acoes-area { display: flex; gap: 6px; align-items: center; }
+.action-btn { transition: 0.2s; border-radius: 10px; }
+.action-btn:hover { transform: scale(1.1); background-color: rgba(236, 173, 173, 0.08); }
+.usuarios-table { min-width: 920px; }
+.estoque-table th:nth-child(1), .estoque-table td:nth-child(1) { width: 24%; }
+.estoque-table th:nth-child(2), .estoque-table td:nth-child(2) { width: 16%; }
+.estoque-table th:nth-child(3), .estoque-table td:nth-child(3) { width: 26%; }
+.estoque-table th:nth-child(4), .estoque-table td:nth-child(4) { width: 14%; }
+.estoque-table th:nth-child(5), .estoque-table td:nth-child(5) { width: 12%; }
+.estoque-table th:nth-child(6), .estoque-table td:nth-child(6) { width: 8%; }
+.mud-table { background: rgba(22, 57, 109, 0.5) !important; width: 100% !important; table-layout: fixed; }
+.mud-table-head th { color: white !important; font-size: 15px; font-weight: 600; border-bottom: 1px solid rgba(151, 179, 190, 0.48); white-space: nowrap; }
+.mud-table-body td { color: white !important; border-bottom: 1px solid rgba(151, 179, 190, 0.48); vertical-align: middle; overflow-wrap: anywhere; }
+.mud-avatar { background: #3B82F6 !important; color: white !important; font-weight: bold; }
+.modal-backdrop { position: fixed; inset: 0; z-index: 1300; background: rgba(2, 6, 23, 0.68); display: flex; align-items: center; justify-content: center; padding: 24px; }
+.form-box { width: min(820px, 100%); max-height: 92vh; overflow-y: auto; padding: 28px; border-radius: 16px; }
+.form-header, .form-actions { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.form-header { margin-bottom: 24px; }
+.form-actions { justify-content: flex-end; margin-top: 24px; }
+@@media (max-width: 768px) { .usuarios-table { min-width: 760px; } .user-info { gap: 10px; } .mud-table-body td, .mud-table-head th { font-size: 13px; } }
 </style>
 
 @code {
+    private static readonly CultureInfo Cultura = new("pt-BR");
+    private readonly List<ProdutoListItem> produtos = [];
+    private EstoqueResumo resumo = new();
+    private ProdutoFormModel form = new();
+    private ProdutoListItem? selecionado;
+    private MudForm? mudForm;
+    private string? busca;
+    private bool carregando;
+    private bool formAberto;
 
-    public class Cliente
-    {
-        public string? Id { get; set; }
-        public string? Categoria { get; set; }
-        public string? Nome { get; set; }
-        public double Valor { get; set; }
-        public int Quantidade { get; set; }
-    }
+    protected override async Task OnInitializedAsync() => await CarregarAsync();
 
-    private List<Cliente> clientes = new()
-    {
-        new Cliente
-        {
-            Id = "1",
-            Categoria = "Eletrônicos",
-            Nome = "Mouse",
-            Valor = 100.00,
-            Quantidade = 10
-        },
-
-        new Cliente
-        {
-            Id = "2",
-            Categoria = "Eletrônicos",
-            Nome = "Mouse",
-            Valor = 150.00,
-            Quantidade = 5
-        }
-    };
+    private async Task BuscarAsync(string termo) { busca = termo; await CarregarAsync(); }
+    private async Task CarregarAsync() { carregando = true; produtos.Clear(); produtos.AddRange(await EstoqueService.ListarAsync(busca)); resumo = await EstoqueService.ObterResumoAsync(); carregando = false; }
+    private void NovoProduto() { form = new ProdutoFormModel(); formAberto = true; }
+    private async Task EditarSelecionadoAsync() { if (selecionado is not null) await EditarProdutoAsync(selecionado.Id); }
+    private async Task EditarProdutoAsync(Guid id) { var produto = await EstoqueService.ObterAsync(id); if (produto is null) return; form = produto; formAberto = true; }
+    private async Task SalvarAsync() { if (mudForm is null) return; await mudForm.ValidateAsync(); if (!mudForm.IsValid) return; if (form.Id.HasValue) await EstoqueService.AtualizarAsync(form.Id.Value, form); else await EstoqueService.CriarAsync(form); Snackbar.Add("Produto salvo com sucesso.", Severity.Success); formAberto = false; await CarregarAsync(); }
+    private async Task ExcluirSelecionadoAsync() { if (selecionado is not null) await ExcluirProdutoAsync(selecionado.Id); }
+    private async Task ExcluirProdutoAsync(Guid id) { await EstoqueService.ExcluirAsync(id); Snackbar.Add("Produto removido ou inativado com sucesso.", Severity.Success); await CarregarAsync(); }
+    private void FecharForm() => formAberto = false;
+    private static string PrimeiraLetra(string? valor) => string.IsNullOrWhiteSpace(valor) ? "?" : valor.Trim()[0].ToString().ToUpperInvariant();
 }

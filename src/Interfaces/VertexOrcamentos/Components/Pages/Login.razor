@@ -1,30 +1,32 @@
 @page "/login"
-
 @layout EmptyLayout
+@inject AuthService AuthService
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
 
 <PageTitle>Vertex | Login</PageTitle>
 
 <div class="login-container">
-
     <div class="title-area">
-
-        <MudImage Src="images/logo.png"
-                  Alt="Logo"
-                  Class="logo-image" />
-
-        <MudText Typo="Typo.h5" Class="enter-text">
-            Entrar
-        </MudText>
-
+        <MudImage Src="images/logo.png" Alt="Logo" Class="logo-image" />
+        <MudText Typo="Typo.h5" Class="enter-text">Entrar</MudText>
     </div>
 
     <MudPaper Elevation="8" Class="login-box">
+        @if (!string.IsNullOrWhiteSpace(mensagemErro))
+        {
+            <MudAlert Severity="Severity.Error" Class="mb-4">@mensagemErro</MudAlert>
+        }
 
         <MudTextField T="string"
                       Label="Usuário"
                       Variant="Variant.Outlined"
                       FullWidth="true"
-                      ShrinkLabel="true" />
+                      ShrinkLabel="true"
+                      Immediate="true"
+                      @bind-Value="login"
+                      OnKeyDown="EntrarComEnter" />
 
         <MudTextField T="string"
                       Label="Senha"
@@ -32,147 +34,92 @@
                       InputType="InputType.Password"
                       FullWidth="true"
                       ShrinkLabel="true"
-                      Class="mt-6" />
+                      Immediate="true"
+                      Class="mt-6"
+                      @bind-Value="senha"
+                      OnKeyDown="EntrarComEnter" />
 
         <div class="button-area">
-
             <MudButton Variant="Variant.Filled"
-                       Color="Color.Primary">
+                       Color="Color.Primary"
+                       Disabled="@entrando"
+                       OnClick="EntrarAsync">
                 Entrar
             </MudButton>
-
         </div>
-
     </MudPaper>
-
 </div>
 
 <style>
-
-html,
-body {
-
-    margin: 0;
-    padding: 0;
-
-    height: 100%;
-}
-
-.login-container {
-
-    min-height: 100vh;
-
-    display: flex;
-
-    flex-direction: column;
-
-    justify-content: center;
-
-    align-items: center;
-
-    background: linear-gradient(
-        135deg,
-        #071D36,
-        #0B3A6A,
-        #4FC3F7
-    );
-
-    padding: 40px 20px;
-}
-
-.title-area {
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    justify-content: center;
-
-    text-align: center;
-}
-
-.logo-image {
-
-    width: 240px;
-
-    max-width: 90%;
-
-    margin-bottom: 15px;
-
-    display: block;
-}
-
-.enter-text {
-
-    color: #F5F7FA;
-
-    margin-bottom: 40px;
-
-    font-weight: 500;
-
-    text-align: center;
-}
-
-.login-box {
-
-    width: 90%;
-
-    max-width: 650px;
-
-    padding: 65px;
-
-    background: rgba(18,56,92,0.88) !important;
-
-    backdrop-filter: blur(10px);
-
-    border-radius: 16px;
-
-    box-shadow: 0 8px 25px rgba(0,0,0,0.35);
-}
-
-.button-area {
-
-    display: flex;
-
-    justify-content: flex-end;
-
-    margin-top: 30px;
-}
-
-.mud-button-filled-primary {
-
-    background-color: #3B82F6 !important;
-
-    color: white !important;
-
-    transition: 0.2s;
-}
-
-.mud-button-filled-primary:hover {
-
-    transform: scale(1.03);
-}
-
-.mud-input-label {
-
-    color: rgba(255,255,255,0.7) !important;
-}
-
-.mud-input-outlined-border {
-
-    border-color: #3B82F6 !important;
-}
-
-.mud-input-control-input-container:focus-within .mud-input-outlined-border {
-
-    border-color: #3B82F6 !important;
-}
-
-.mud-input-slot {
-
-    color: white !important;
-}
-
+html, body { margin: 0; padding: 0; height: 100%; }
+.login-container { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: linear-gradient(135deg, #071D36, #0B3A6A, #4FC3F7); padding: 40px 20px; }
+.title-area { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.logo-image { width: 240px; max-width: 90%; margin-bottom: 15px; display: block; }
+.enter-text { color: #F5F7FA; margin-bottom: 40px; font-weight: 500; text-align: center; }
+.login-box { width: 90%; max-width: 650px; padding: 65px; background: rgba(18,56,92,0.88) !important; backdrop-filter: blur(10px); border-radius: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.35); }
+.button-area { display: flex; justify-content: flex-end; margin-top: 30px; }
+.mud-button-filled-primary { background-color: #3B82F6 !important; color: white !important; transition: 0.2s; }
+.mud-button-filled-primary:hover { transform: scale(1.03); }
+.mud-input-label { color: rgba(255,255,255,0.7) !important; }
+.mud-input-outlined-border { border-color: #3B82F6 !important; }
+.mud-input-control-input-container:focus-within .mud-input-outlined-border { border-color: #3B82F6 !important; }
+.mud-input-slot { color: white !important; }
 </style>
+
+@code {
+    private string login = string.Empty;
+    private string senha = string.Empty;
+    private string? mensagemErro;
+    private bool entrando;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        await JS.InvokeVoidAsync("localStorage.removeItem", "vertex_user");
+    }
+
+    private async Task EntrarComEnter(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            await EntrarAsync();
+        }
+    }
+
+    private async Task EntrarAsync()
+    {
+        mensagemErro = null;
+
+        if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(senha))
+        {
+            mensagemErro = "Informe usuário e senha.";
+            return;
+        }
+
+        try
+        {
+            entrando = true;
+            var usuario = await AuthService.LoginAsync(login, senha);
+
+            if (usuario is null)
+            {
+                mensagemErro = "Usuário ou senha inválidos.";
+                return;
+            }
+
+            await JS.InvokeVoidAsync("localStorage.setItem", "vertex_user", usuario.Login);
+            await JS.InvokeVoidAsync("localStorage.setItem", "vertex_user_name", usuario.Nome);
+            await JS.InvokeVoidAsync("localStorage.setItem", "vertex_user_role", usuario.Cargo);
+            Snackbar.Add($"Bem-vindo, {usuario.Nome}.", Severity.Success);
+            Navigation.NavigateTo("/orcamentos", forceLoad: true);
+        }
+        finally
+        {
+            entrando = false;
+        }
+    }
+}

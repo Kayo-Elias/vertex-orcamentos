@@ -1,171 +1,102 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
 
 <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
 <MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
 <MudLayout>
-
-    <MudAppBar Class="d-flex"
-               Color="Color.Primary"
-               Dense="true"
-               Fixed="false">
-
-        <!-- LOGO -->
+    <MudAppBar Class="d-flex" Color="Color.Primary" Dense="true" Fixed="false">
         <MudStack Class="d-flex justify-start align-content-start">
-
             <MudLink Href="/">
-
-                <MudImage Fluid="true"
-                          Src="images/logo.png"
-                          Width="150"
-                          Height="56"
-                          Alt="Logo"
-                          Class="rounded-lg" />
-
+                <MudImage Fluid="true" Src="images/logo.png" Width="150" Height="56" Alt="Logo" Class="rounded-lg" />
             </MudLink>
-
         </MudStack>
 
-        <!-- MENU -->
-        <MudStack Row="true"
-                  Class="d-flex justify-content align-center"
-                  Spacing="3">
-
-            <!-- ORÇAMENTOS -->
-            <MudButton Variant="Variant.Text"
-                       Color="Color.Tertiary"
-                       StartIcon="@Icons.Material.Filled.Description"
-                       Class="px-4 mr-2"
-                       Href="orcamentos">
-
-                Orçamentos
-
-            </MudButton>
-
-            <!-- CLIENTES -->
-            <MudButton Variant="Variant.Text"
-                       Color="Color.Tertiary"
-                       StartIcon="@Icons.Material.Filled.People"
-                       Class="px-4 mr-2"
-                       Href="clientes">
-
-                Clientes
-
-            </MudButton>
-
-            <!-- ESTOQUE -->
-            <MudButton Variant="Variant.Text"
-                       Color="Color.Tertiary"
-                       StartIcon="@Icons.Material.Filled.ShoppingCart"
-                       Class="px-4 mr-2"
-                       Href="pedidos">
-
-                 Pedidos
-
-            </MudButton>
-
-            <MudButton Variant="Variant.Text"
-                       Color="Color.Tertiary"
-                       StartIcon="@Icons.Material.Filled.Warehouse"
-                       Class="px-4 mr-2"
-                       Href="estoque">
-
-                Estoque
-
-            </MudButton>
-
-            <!-- USUÁRIOS -->
-            <MudButton Variant="Variant.Text"
-                       Color="Color.Tertiary"
-                       StartIcon="@Icons.Material.Filled.AdminPanelSettings"
-                       Class="px-4 mr-2"
-                       Href="usuarios">
-
-                Usuários
-
-            </MudButton>
-
-            <!-- RELATÓRIOS -->
-            <MudButton Variant="Variant.Text"
-                       Color="Color.Tertiary"
-                       StartIcon="@Icons.Material.Filled.BarChart"
-                       Class="px-4 mr-2"
-                       Href="relatorios">
-
-                Relatórios
-
-            </MudButton>
-
+        <MudStack Row="true" Class="d-flex justify-content align-center" Spacing="3">
+            <MudButton Variant="Variant.Text" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.Description" Class="px-4 mr-2" Href="orcamentos">Orçamentos</MudButton>
+            <MudButton Variant="Variant.Text" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.People" Class="px-4 mr-2" Href="clientes">Clientes</MudButton>
+            <MudButton Variant="Variant.Text" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.ShoppingCart" Class="px-4 mr-2" Href="pedidos">Pedidos</MudButton>
+            <MudButton Variant="Variant.Text" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.Warehouse" Class="px-4 mr-2" Href="estoque">Estoque</MudButton>
+            <MudButton Variant="Variant.Text" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.AdminPanelSettings" Class="px-4 mr-2" Href="usuarios">Usuários</MudButton>
+            <MudButton Variant="Variant.Text" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.BarChart" Class="px-4 mr-2" Href="relatorios">Relatórios</MudButton>
         </MudStack>
 
         <MudSpacer />
 
-        <!-- PERFIL -->
-        <MudMenu ActivationEvent="@MouseEvent.LeftClick"
-                 AnchorOrigin="Origin.BottomRight"
-                 TransformOrigin="Origin.TopRight">
+        <div class="profile-menu-wrap">
+            <MudIconButton Icon="@Icons.Material.Filled.Person"
+                           Color="Color.Inherit"
+                           Size="Size.Medium"
+                           OnClick="AlternarMenuPerfil" />
 
-            <ActivatorContent>
-
-                <MudIconButton Icon="@Icons.Material.Filled.Person"
-                               Color="Color.Inherit"
-                               Size="Size.Medium" />
-
-            </ActivatorContent>
-
-            <ChildContent>
-
-                <MudMenuItem Disabled="true">
-
-                    João Admin
-
-                </MudMenuItem>
-
-                <MudDivider />
-
-                <MudMenuItem Icon="@Icons.Material.Filled.Logout"
-                             IconColor="Color.Error"
-                             Href="/logout">
-
-                    Sair
-
-                </MudMenuItem>
-
-            </ChildContent>
-
-        </MudMenu>
-
+            @if (menuPerfilAberto)
+            {
+                <MudPaper Class="profile-menu" Elevation="8">
+                    <MudText Typo="Typo.body2" Class="profile-name">@nomeUsuario</MudText>
+                    <MudDivider Class="my-2" />
+                    <MudButton Variant="Variant.Text"
+                               Color="Color.Error"
+                               StartIcon="@Icons.Material.Filled.Logout"
+                               FullWidth="true"
+                               Class="profile-exit"
+                               OnClick="SairAsync">
+                        Sair
+                    </MudButton>
+                </MudPaper>
+            }
+        </div>
     </MudAppBar>
 
-    <!-- CONTEÚDO -->
-    <MudMainContent Class="pt-16 pa-4">
-
-        @Body
-
-    </MudMainContent>
-
+    <MudMainContent Class="pt-16 pa-4">@Body</MudMainContent>
 </MudLayout>
 
 <div id="blazor-error-ui" data-nosnippet>
-
     An unhandled error has occurred.
-
     <a href="." class="reload">Reload</a>
-
     <span class="dismiss">🗙</span>
-
 </div>
 
+<style>
+.profile-menu-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.profile-menu {
+    position: absolute;
+    top: 48px;
+    right: 0;
+    min-width: 180px;
+    padding: 12px;
+    border-radius: 10px;
+    background: #0B1F38 !important;
+    border: 1px solid rgba(255,255,255,0.12);
+    z-index: 2000;
+}
+
+.profile-name {
+    color: white;
+    font-weight: 700;
+    padding: 4px 8px;
+}
+
+.profile-exit {
+    justify-content: flex-start;
+}
+</style>
+
 @code {
-
     private bool _isDarkMode = true;
-
-    private MudTheme? _theme = null;
+    private MudTheme? _theme;
+    private string nomeUsuario = "Usuário";
+    private bool menuPerfilAberto;
 
     protected override void OnInitialized()
     {
-        base.OnInitialized();
-
         _theme = new()
         {
             PaletteLight = _lightPalette,
@@ -174,9 +105,48 @@
         };
     }
 
-    private void DarkModeToggle()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        _isDarkMode = !_isDarkMode;
+        if (!firstRender)
+        {
+            return;
+        }
+
+        var path = Navigation.ToBaseRelativePath(Navigation.Uri).Trim('/').ToLowerInvariant();
+        if (path == string.Empty)
+        {
+            Navigation.NavigateTo("/login", forceLoad: true);
+            return;
+        }
+
+        if (path == "login")
+        {
+            return;
+        }
+
+        var login = await JS.InvokeAsync<string?>("localStorage.getItem", "vertex_user");
+        if (string.IsNullOrWhiteSpace(login))
+        {
+            Navigation.NavigateTo("/login", forceLoad: true);
+            return;
+        }
+
+        nomeUsuario = await JS.InvokeAsync<string?>("localStorage.getItem", "vertex_user_name") ?? login;
+        StateHasChanged();
+    }
+
+    private async Task SairAsync()
+    {
+        menuPerfilAberto = false;
+        await JS.InvokeVoidAsync("localStorage.removeItem", "vertex_user");
+        await JS.InvokeVoidAsync("localStorage.removeItem", "vertex_user_name");
+        await JS.InvokeVoidAsync("localStorage.removeItem", "vertex_user_role");
+        Navigation.NavigateTo("/login", forceLoad: true);
+    }
+
+    private void AlternarMenuPerfil()
+    {
+        menuPerfilAberto = !menuPerfilAberto;
     }
 
     private readonly PaletteLight _lightPalette = new()
@@ -219,12 +189,4 @@
         Divider = "#292838",
         OverlayLight = "#1e1e2d80",
     };
-
-    public string DarkLightModeButtonIcon => _isDarkMode switch
-    {
-        true => Icons.Material.Rounded.AutoMode,
-        false => Icons.Material.Outlined.DarkMode,
-    };
 }
-
-

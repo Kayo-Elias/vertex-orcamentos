@@ -1,5 +1,9 @@
 @page "/orcamentos"
 @inject IJSRuntime JS
+@inject OrcamentoService OrcamentoService
+@inject ClienteService ClienteService
+@inject EstoqueService EstoqueService
+@inject ISnackbar Snackbar
 @using VertexOrcamentos.Components.Shared
 
 <PageTitle>Vertex | Orçamentos</PageTitle>
@@ -431,36 +435,52 @@
 
 @code {
 
-    private int orcamentosCriados = 4;
+    private int orcamentosCriados;
+    private readonly List<ClienteListItem> clientes = new();
 
-    // ───── Cabeçalho ─────
     private CabecalhoOrcamento cabecalho = new()
     {
         Id = "ORC-001",
         Validade = 15,
-        CondicaoPagamento = "À vista"
+        CondicaoPagamento = "À vista",
+        Vendedor = "Admin"
     };
 
-    // ───── Estoque de produtos ─────
-    private List<ProdutoEstoque> produtosEstoque = new()
-    {
-        new ProdutoEstoque { Id = "1", Categoria = "Eletrônicos", Nome = "Mouse Gamer", Valor = 100.00, Unidade = "un" },
-        new ProdutoEstoque { Id = "2", Categoria = "Eletrônicos", Nome = "Teclado Mecânico", Valor = 150.00, Unidade = "un" },
-        new ProdutoEstoque { Id = "3", Categoria = "Móveis",      Nome = "Cadeira Ergonômica", Valor = 250.00, Unidade = "un" },
-        new ProdutoEstoque { Id = "4", Categoria = "Eletrônicos", Nome = "Monitor 24\"", Valor = 899.00, Unidade = "un" },
-        new ProdutoEstoque { Id = "5", Categoria = "Periféricos", Nome = "Headset USB", Valor = 199.90, Unidade = "un" },
-    };
-
-    // ───── Lista de itens do orçamento ─────
+    private List<ProdutoEstoque> produtosEstoque = new();
     private List<ItemOrcamento> itens = new();
-
-    // ───── Item sendo adicionado ─────
     private ItemOrcamento novoItem = new() { Quantidade = 1 };
 
-    // ───── Calculados ─────
     private double Subtotal       => itens.Sum(i => i.ValorUnitario * i.Quantidade);
     private double TotalDesconto  => itens.Sum(i => i.ValorUnitario * i.Quantidade * i.Desconto / 100);
     private double TotalGeral     => Subtotal - TotalDesconto + cabecalho.Frete;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregarDadosAsync();
+        NovoOrcamento();
+    }
+
+    private async Task CarregarDadosAsync()
+    {
+        clientes.Clear();
+        clientes.AddRange(await ClienteService.ListarAsync());
+
+        var produtos = await EstoqueService.ListarAsync();
+        produtosEstoque = produtos
+            .Where(p => p.Ativo)
+            .Select(p => new ProdutoEstoque
+            {
+                Id = p.Id.ToString(),
+                Categoria = p.Categoria,
+                Nome = p.Nome,
+                Valor = (double)p.Valor,
+                Unidade = p.Unidade
+            })
+            .ToList();
+
+        var resumo = await OrcamentoService.ObterResumoAsync();
+        orcamentosCriados = resumo.OrcamentosCriados;
+    }
 
     // ───── Evento: produto selecionado no select ─────
     private void OnProdutoSelecionado(string id)
@@ -497,14 +517,14 @@
     // ───── Remover item ─────
     private void RemoverItem(ItemOrcamento item) => itens.Remove(item);
 
-    // ───── Imprimir ─────
     private async Task ImprimirOrcamento()
     {
         await JS.InvokeVoidAsync("eval", @"
-            document.getElementById('print-area').style.display = 'block';
-            window.print();
+            const area = document.getElementById('print-area');
+            if (area) area.style.display = 'block';
+            setTimeout(() => window.print(), 50);
             setTimeout(() => {
-                document.getElementById('print-area').style.display = 'none';
+                if (area) area.style.display = 'none';
             }, 1500);
         ");
     }
@@ -516,21 +536,85 @@
         {
             Id = $"ORC-{DateTime.Now:yyyyMMddHHmmss}",
             Validade = 15,
-            CondicaoPagamento = "À vista"
+            CondicaoPagamento = "À vista",
+            Vendedor = "Admin"
         };
+
+        var cliente = clientes.FirstOrDefault();
+        if (cliente is not null)
+        {
+            cabecalho.ClienteNome = cliente.Nome;
+            cabecalho.ClienteCpfCnpj = cliente.Cpf;
+            cabecalho.ClienteTelefone = cliente.Telefone;
+            cabecalho.ClienteEmail = cliente.Email;
+        }
+
         itens.Clear();
         novoItem = new ItemOrcamento { Quantidade = 1 };
     }
 
-    // ───── Salvar ─────
-    private void SalvarOrcamento()
+    private async Task SalvarOrcamento()
     {
-        if (!string.IsNullOrWhiteSpace(cabecalho.ClienteNome) && itens.Count > 0)
-            orcamentosCriados++;
+        try
+        {
+            if (itens.Count == 0)
+            {
+                Snackbar.Add("Adicione pelo menos um produto antes de salvar.", Severity.Warning);
+                return;
+            }
+
+            var cliente = EncontrarCliente();
+            if (cliente is null)
+            {
+                Snackbar.Add("Informe um cliente cadastrado pelo nome ou e-mail.", Severity.Warning);
+                return;
+            }
+
+            var model = new OrcamentoCabecalhoModel
+            {
+                Id = cabecalho.Id,
+                Vendedor = cabecalho.Vendedor,
+                ClienteId = cliente.Id,
+                ClienteNome = cliente.Nome,
+                ClienteCpfCnpj = cliente.Cpf,
+                ClienteTelefone = cliente.Telefone,
+                ClienteEmail = cliente.Email,
+                CondicaoPagamento = cabecalho.CondicaoPagamento,
+                Validade = cabecalho.Validade,
+                Frete = (decimal)cabecalho.Frete,
+                Observacoes = cabecalho.Observacoes
+            };
+
+            var itensModel = itens.Select(i => new ItemOrcamentoModel
+            {
+                ProdutoId = Guid.Parse(i.ProdutoId),
+                ProdutoNome = i.ProdutoNome,
+                Unidade = i.Unidade,
+                Quantidade = i.Quantidade,
+                ValorUnitario = (decimal)i.ValorUnitario,
+                Desconto = (decimal)i.Desconto,
+                Observacao = i.Observacao
+            }).ToList();
+
+            await OrcamentoService.SalvarAsync(model, itensModel);
+            cabecalho.Id = model.Id;
+            orcamentosCriados = (await OrcamentoService.ObterResumoAsync()).OrcamentosCriados;
+            Snackbar.Add("Orçamento salvo no banco com sucesso.", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
     }
 
-    // ───── Cancelar ─────
     private void CancelarOrcamento() => NovoOrcamento();
+
+    private ClienteListItem? EncontrarCliente()
+    {
+        return clientes.FirstOrDefault(c =>
+            c.Nome.Equals(cabecalho.ClienteNome, StringComparison.OrdinalIgnoreCase)
+            || c.Email.Equals(cabecalho.ClienteEmail, StringComparison.OrdinalIgnoreCase));
+    }
 
     // ═══════════════════════════════════
     // MODELOS
