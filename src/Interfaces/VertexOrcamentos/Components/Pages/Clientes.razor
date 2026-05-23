@@ -11,10 +11,14 @@
     Imagem="https://www.dabusarquitetura.com.br/blog/wp-content/uploads/2024/02/como-receber-cliente-escritorio.png"
     ImagemPosicao="center 100" />
 
-<MudStack Row="true" Spacing="2" Wrap="Wrap.Wrap" Class="mb-6">
+<MudStack Row="true" Spacing="2" Wrap="Wrap.Wrap" AlignItems="AlignItems.Center" Class="mb-6 action-toolbar">
     <MudButton Variant="Variant.Filled" Color="Color.Success" StartIcon="@Icons.Material.Filled.Add" Style="border-radius:12px; font-weight:800;" OnClick="NovoCliente">Criar</MudButton>
     <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Style="border-radius:12px; font-weight:800; color:white;" Disabled="@(selecionado is null)" OnClick="EditarSelecionadoAsync">Editar</MudButton>
-    <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete" Style="border-radius:12px; font-weight:800;" Disabled="@(selecionado is null)" OnClick="ExcluirSelecionadoAsync">Excluir</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete" Style="border-radius:12px; font-weight:800;" OnClick="ExcluirSelecionadosAsync">@(modoExclusao ? $"Excluir ({selecionadosExclusao.Count})" : "Excluir")</MudButton>
+    @if (modoExclusao)
+    {
+        <MudButton Variant="Variant.Outlined" Color="Color.Default" Style="border-radius:12px; font-weight:800;" OnClick="CancelarModoExclusao">Cancelar</MudButton>
+    }
 </MudStack>
 
 <MudGrid Class="mt-2 mb-4">
@@ -38,6 +42,10 @@
             <MudTh Class="hide-mobile">Email</MudTh>
             <MudTh>Telefone</MudTh>
             <MudTh>Status</MudTh>
+            @if (modoExclusao)
+            {
+                <MudTh Class="select-col">Selecionar</MudTh>
+            }
             <MudTh>Ações</MudTh>
         </HeaderContent>
         <RowTemplate>
@@ -54,6 +62,12 @@
                 <MudTd Class="hide-mobile">@context.Email</MudTd>
                 <MudTd>@context.Telefone</MudTd>
                 <MudTd><MudChip T="string" Color="@StatusColor(context.Status)" Variant="Variant.Filled" Size="Size.Small">@context.Status</MudChip></MudTd>
+                @if (modoExclusao)
+                {
+                    <MudTd Class="select-col">
+                        <MudCheckBox T="bool" Value="@selecionadosExclusao.Contains(context.Id)" ValueChanged="@((bool marcado) => AlternarSelecaoExclusao(context.Id, marcado))" Color="Color.Error" />
+                    </MudTd>
+                }
                 <MudTd>
                     <div class="acoes-area">
                         <MudTooltip Text="Editar"><MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Default" Style="color: #42A5F5;" Size="Size.Small" Class="action-btn" OnClick="@(() => EditarClienteAsync(context.Id))" /></MudTooltip>
@@ -105,12 +119,13 @@
 .acoes-area { display: flex; gap: 6px; align-items: center; }
 .action-btn { transition: 0.2s; border-radius: 10px; }
 .action-btn:hover { transform: scale(1.1); background-color: rgba(236, 173, 173, 0.08); }
+.action-toolbar .mud-button-root { min-height: 40px; }
+.select-col { width: 88px !important; text-align: center !important; }
 .usuarios-table { min-width: 860px; }
 .clientes-table th:nth-child(1), .clientes-table td:nth-child(1) { width: 34%; }
 .clientes-table th:nth-child(2), .clientes-table td:nth-child(2) { width: 26%; }
 .clientes-table th:nth-child(3), .clientes-table td:nth-child(3) { width: 16%; }
 .clientes-table th:nth-child(4), .clientes-table td:nth-child(4) { width: 12%; }
-.clientes-table th:nth-child(5), .clientes-table td:nth-child(5) { width: 12%; }
 .mud-table { background: rgba(22, 57, 109, 0.5) !important; width: 100% !important; table-layout: fixed; }
 .mud-table-head th { color: white !important; font-size: 15px; font-weight: 600; border-bottom: 1px solid rgba(151, 179, 190, 0.48); white-space: nowrap; }
 .mud-table-body td { color: white !important; border-bottom: 1px solid rgba(151, 179, 190, 0.48); vertical-align: middle; overflow-wrap: anywhere; }
@@ -134,6 +149,8 @@
     private string? busca;
     private bool carregando;
     private bool formAberto;
+    private bool modoExclusao;
+    private readonly HashSet<Guid> selecionadosExclusao = [];
 
     protected override async Task OnInitializedAsync() => await CarregarAsync();
 
@@ -188,6 +205,44 @@
     private async Task ExcluirSelecionadoAsync()
     {
         if (selecionado is not null) await ExcluirClienteAsync(selecionado.Id);
+    }
+
+    private async Task ExcluirSelecionadosAsync()
+    {
+        if (!modoExclusao)
+        {
+            modoExclusao = true;
+            selecionadosExclusao.Clear();
+            Snackbar.Add("Selecione os clientes que deseja excluir.", Severity.Info);
+            return;
+        }
+
+        if (selecionadosExclusao.Count == 0)
+        {
+            Snackbar.Add("Marque pelo menos um cliente para excluir.", Severity.Warning);
+            return;
+        }
+
+        foreach (var id in selecionadosExclusao.ToList())
+        {
+            await ClienteService.ExcluirAsync(id);
+        }
+
+        Snackbar.Add("Clientes removidos ou bloqueados com sucesso.", Severity.Success);
+        CancelarModoExclusao();
+        await CarregarAsync();
+    }
+
+    private void AlternarSelecaoExclusao(Guid id, bool marcado)
+    {
+        if (marcado) selecionadosExclusao.Add(id);
+        else selecionadosExclusao.Remove(id);
+    }
+
+    private void CancelarModoExclusao()
+    {
+        modoExclusao = false;
+        selecionadosExclusao.Clear();
     }
 
     private async Task ExcluirClienteAsync(Guid id)

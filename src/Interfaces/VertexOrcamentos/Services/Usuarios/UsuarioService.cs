@@ -117,18 +117,9 @@ public sealed class UsuarioService(AppDbContext db)
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken)
             ?? throw new InvalidOperationException("Usuario nao encontrado.");
 
-        if (usuario.Cargo == "Admin")
-        {
-            throw new InvalidOperationException("Administradores nao podem ser editados por esta tela.");
-        }
-
         await ValidarLoginUnicoAsync(model.Login, id, cancellationToken);
 
         var novoCargo = NormalizarCargo(model.Cargo);
-        if (usuario.Cargo == "Admin" && novoCargo != "Admin")
-        {
-            await GarantirOutroAdminAtivoAsync(id, cancellationToken);
-        }
 
         var agora = DateTimeOffset.UtcNow;
         usuario.Pessoa.PrimeiroNome = model.Nome.Trim();
@@ -148,11 +139,6 @@ public sealed class UsuarioService(AppDbContext db)
             usuario.Senha = HashSenha(model.Senha);
         }
 
-        if (!usuario.UsuarioAtivo && usuario.Cargo == "Admin")
-        {
-            await GarantirOutroAdminAtivoAsync(id, cancellationToken);
-        }
-
         await db.SaveChangesAsync(cancellationToken);
     }
 
@@ -160,11 +146,6 @@ public sealed class UsuarioService(AppDbContext db)
     {
         var usuario = await db.Usuarios.FirstOrDefaultAsync(x => x.Id == id, cancellationToken)
             ?? throw new InvalidOperationException("Usuario nao encontrado.");
-
-        if (usuario.Cargo == "Admin")
-        {
-            throw new InvalidOperationException("Administradores nao podem ser excluidos por esta tela.");
-        }
 
         usuario.UsuarioAtivo = false;
         usuario.DataModificacao = DateTimeOffset.UtcNow;
@@ -180,17 +161,6 @@ public sealed class UsuarioService(AppDbContext db)
         if (existe)
         {
             throw new InvalidOperationException("Ja existe um usuario com esse login.");
-        }
-    }
-
-    private async Task GarantirOutroAdminAtivoAsync(Guid usuarioId, CancellationToken cancellationToken)
-    {
-        var existeOutroAdmin = await db.Usuarios.AnyAsync(x =>
-            x.Id != usuarioId && x.UsuarioAtivo && x.Cargo == "Admin", cancellationToken);
-
-        if (!existeOutroAdmin)
-        {
-            throw new InvalidOperationException("Nao e possivel remover ou inativar o ultimo administrador ativo.");
         }
     }
 

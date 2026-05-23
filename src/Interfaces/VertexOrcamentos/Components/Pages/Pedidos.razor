@@ -17,12 +17,12 @@
     <MudItem xs="12" sm="6" md="3"><MudPaper Class="pa-4" Elevation="0" Style="background:#111827; border-radius:16px;"><MudText Typo="Typo.body2" Style="color:#94A3B8;">Cancelados</MudText><MudText Typo="Typo.h4" Style="font-weight:700; color:#EF4444;">@resumo.Cancelados</MudText></MudPaper></MudItem>
 </MudGrid>
 
-<MudPaper Class="pa-4 pa-sm-6" Elevation="0" Style="background-color:#111927; border-radius:16px;">
-    <MudGrid Spacing="2">
-        <MudItem xs="12" md="4"><MudTextField T="string" Value="@busca" ValueChanged="BuscarAsync" Placeholder="Pesquisar pedido" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" Style="border-radius:14px;" Margin="Margin.Dense" Immediate="true" DebounceInterval="350" /></MudItem>
-        <MudItem xs="12" md="3"><MudSelect T="string" Label="Status" Value="@statusFiltro" ValueChanged="StatusChangedAsync" Variant="Variant.Outlined" Style="border-radius:14px;" Margin="Margin.Dense" Clearable="true"><MudSelectItem Value="@("Pago")">Pago</MudSelectItem><MudSelectItem Value="@("Pendente")">Pendente</MudSelectItem><MudSelectItem Value="@("Cancelado")">Cancelado</MudSelectItem></MudSelect></MudItem>
-        <MudItem xs="12" md="3"><MudDatePicker Label="Data" Date="@dataFiltro" DateChanged="DataChangedAsync" Variant="Variant.Outlined" Style="border-radius:14px;" Margin="Margin.Dense" /></MudItem>
-        <MudItem xs="12" md="2" Class="d-flex align-center"><MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" FullWidth="true" Style="border-radius:12px; height:40px;" OnClick="NovoPedido">Novo Pedido</MudButton></MudItem>
+<MudPaper Class="pa-4 pa-sm-6 filter-paper" Elevation="0" Style="background-color:#111927; border-radius:16px;">
+    <MudGrid Spacing="2" Class="filter-grid">
+        <MudItem xs="12" md="4"><MudTextField T="string" Value="@busca" ValueChanged="BuscarAsync" Placeholder="Pesquisar pedido" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" Class="filter-field" Margin="Margin.Dense" Immediate="true" DebounceInterval="350" /></MudItem>
+        <MudItem xs="12" md="3"><MudSelect T="string" Label="Status" Value="@statusFiltro" ValueChanged="StatusChangedAsync" Variant="Variant.Outlined" Class="filter-field" Margin="Margin.Dense" Clearable="true"><MudSelectItem Value="@("Pago")">Pago</MudSelectItem><MudSelectItem Value="@("Pendente")">Pendente</MudSelectItem><MudSelectItem Value="@("Cancelado")">Cancelado</MudSelectItem></MudSelect></MudItem>
+        <MudItem xs="12" md="3"><MudDatePicker Label="Data" Date="@dataFiltro" DateChanged="DataChangedAsync" Variant="Variant.Outlined" Class="filter-field" Margin="Margin.Dense" /></MudItem>
+        <MudItem xs="12" md="2" Class="d-flex align-center"><MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" FullWidth="true" Class="filter-action" OnClick="NovoPedido">Novo Pedido</MudButton></MudItem>
     </MudGrid>
 </MudPaper>
 
@@ -33,7 +33,7 @@
                 <MudTd><div class="user-info"><MudAvatar Size="Size.Medium" Color="Color.Primary">@PrimeiraLetra(context.Cliente)</MudAvatar><div><MudText Typo="Typo.body1">@context.Cliente</MudText><MudText Typo="Typo.caption" Class="user-id">Pedido @context.Codigo</MudText></div></div></MudTd>
                 <MudTd><MudText Typo="Typo.body1" Style="font-weight:600;">@context.Valor.ToString("C", Cultura)</MudText></MudTd>
                 <MudTd><MudChip T="string" Color="@GetStatusColor(context.Status)" Variant="Variant.Filled" Size="Size.Small">@context.Status</MudChip></MudTd>
-                <MudTd><div class="acoes-area"><MudTooltip Text="Marcar como pago"><MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Default" Style="color: #42A5F5;" Size="Size.Small" Class="action-btn" OnClick="@(() => AtualizarStatusAsync(context.Id, "Pago"))" /></MudTooltip><MudTooltip Text="Cancelar"><MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" Class="action-btn" OnClick="@(() => ExcluirPedidoAsync(context.Id))" /></MudTooltip></div></MudTd>
+                <MudTd><div class="acoes-area"><MudTooltip Text="Marcar como pago"><MudIconButton Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Default" Style="color: #22C55E;" Size="Size.Small" Class="action-btn" OnClick="@(() => AtualizarStatusAsync(context.Id, "Pago"))" /></MudTooltip><MudTooltip Text="Cancelar"><MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" Class="action-btn" OnClick="@(() => ExcluirPedidoAsync(context.Id))" /></MudTooltip></div></MudTd>
         </RowTemplate>
     </MudTable>
 </MudPaper>
@@ -65,6 +65,10 @@
 .acoes-area { display: flex; gap: 6px; align-items: center; }
 .action-btn { transition: 0.2s; border-radius: 10px; }
 .action-btn:hover { transform: scale(1.1); background-color: rgba(236, 173, 173, 0.08); }
+.filter-grid { align-items: center; }
+.filter-field { width: 100%; }
+.filter-paper .mud-input-control { margin-top: 0 !important; margin-bottom: 0 !important; }
+.filter-action { border-radius: 12px; min-height: 40px; font-weight: 800; color: white; }
 .usuarios-table { min-width: 720px; }
 .pedidos-table th:nth-child(1), .pedidos-table td:nth-child(1) { width: 44%; }
 .pedidos-table th:nth-child(2), .pedidos-table td:nth-child(2) { width: 22%; }

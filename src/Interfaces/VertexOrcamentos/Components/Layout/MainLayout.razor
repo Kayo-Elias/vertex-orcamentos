@@ -20,7 +20,10 @@
             <MudButton Variant="Variant.Text" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.People" Class="px-4 mr-2" Href="clientes">Clientes</MudButton>
             <MudButton Variant="Variant.Text" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.ShoppingCart" Class="px-4 mr-2" Href="pedidos">Pedidos</MudButton>
             <MudButton Variant="Variant.Text" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.Warehouse" Class="px-4 mr-2" Href="estoque">Estoque</MudButton>
-            <MudButton Variant="Variant.Text" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.AdminPanelSettings" Class="px-4 mr-2" Href="usuarios">Usuários</MudButton>
+            @if (usuarioAdmin)
+            {
+                <MudButton Variant="Variant.Text" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.AdminPanelSettings" Class="px-4 mr-2" Href="usuarios">Usuários</MudButton>
+            }
             <MudButton Variant="Variant.Text" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.BarChart" Class="px-4 mr-2" Href="relatorios">Relatórios</MudButton>
         </MudStack>
 
@@ -93,6 +96,7 @@
     private bool _isDarkMode = true;
     private MudTheme? _theme;
     private string nomeUsuario = "Usuário";
+    private bool usuarioAdmin;
     private bool menuPerfilAberto;
 
     protected override void OnInitialized()
@@ -132,6 +136,9 @@
         }
 
         nomeUsuario = await JS.InvokeAsync<string?>("localStorage.getItem", "vertex_user_name") ?? login;
+        var perfil = await JS.InvokeAsync<string?>("localStorage.getItem", "vertex_user_role");
+        usuarioAdmin = string.Equals(perfil, "Admin", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(perfil, "Administrador", StringComparison.OrdinalIgnoreCase);
         StateHasChanged();
     }
 

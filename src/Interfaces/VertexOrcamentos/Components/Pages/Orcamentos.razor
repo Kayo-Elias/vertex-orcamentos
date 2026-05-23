@@ -63,7 +63,6 @@
         <div style="border:1px solid #ddd; border-radius:6px; padding:14px;">
             <div style="font-size:10px; font-weight:700; color:#888; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px;">Informações do Orçamento</div>
             <div style="font-size:12px; color:#555;">Vendedor: <span style="color:#111; font-weight:500;">@cabecalho.Vendedor</span></div>
-            <div style="font-size:12px; color:#555; margin-top:3px;">Validade: <span style="color:#111; font-weight:500;">@cabecalho.Validade dias</span></div>
             <div style="font-size:12px; color:#555; margin-top:3px;">Condição: <span style="color:#111; font-weight:500;">@cabecalho.CondicaoPagamento</span></div>
         </div>
     </div>
@@ -117,13 +116,6 @@
                     <span style="color:#b91c1c; font-weight:500;">- @TotalDesconto.ToString("C")</span>
                 </div>
             }
-            @if (cabecalho.Frete > 0)
-            {
-                <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee; font-size:13px;">
-                    <span style="color:#555;">Frete:</span>
-                    <span style="font-weight:500;">@cabecalho.Frete.ToString("C")</span>
-                </div>
-            }
             <div style="display:flex; justify-content:space-between; padding:10px 0; border-top:2px solid #111; margin-top:4px;">
                 <span style="font-size:15px; font-weight:700; color:#111;">TOTAL:</span>
                 <span style="font-size:18px; font-weight:700; color:#111;">@TotalGeral.ToString("C")</span>
@@ -140,7 +132,7 @@
     }
 
     <div style="border-top:1px solid #eee; padding-top:16px; font-size:11px; color:#aaa; text-align:center;">
-        Orçamento válido por @cabecalho.Validade dias a partir da data de emissão. · Gerado pelo sistema Vertex.
+        Gerado pelo sistema Vertex.
     </div>
 </div>
 
@@ -219,7 +211,7 @@
                     </MudItem>
                     <MudItem xs="12" sm="6">
                         <MudTextField T="string" Label="Vendedor" Variant="Variant.Outlined" Margin="Margin.Dense"
-                                      @bind-Value="cabecalho.Vendedor" FullWidth="true" />
+                                      @bind-Value="cabecalho.Vendedor" FullWidth="true" ReadOnly="true" />
                     </MudItem>
                     <MudItem xs="12" sm="6">
                         <MudTextField T="string" Label="Nome do cliente" Variant="Variant.Outlined" Margin="Margin.Dense"
@@ -237,17 +229,9 @@
                         <MudTextField T="string" Label="E-mail" Variant="Variant.Outlined" Margin="Margin.Dense"
                                       @bind-Value="cabecalho.ClienteEmail" FullWidth="true" />
                     </MudItem>
-                    <MudItem xs="12" sm="4">
+                    <MudItem xs="12">
                         <MudTextField T="string" Label="Condição de pagamento" Variant="Variant.Outlined" Margin="Margin.Dense"
                                       @bind-Value="cabecalho.CondicaoPagamento" FullWidth="true" />
-                    </MudItem>
-                    <MudItem xs="6" sm="4">
-                        <MudNumericField T="int" Label="Validade (dias)" Variant="Variant.Outlined" Margin="Margin.Dense"
-                                      @bind-Value="cabecalho.Validade" FullWidth="true" Min="1" />
-                    </MudItem>
-                    <MudItem xs="6" sm="4">
-                        <MudNumericField T="double" Label="Frete (R$)" Variant="Variant.Outlined" Margin="Margin.Dense"
-                                      @bind-Value="cabecalho.Frete" FullWidth="true" Min="0" />
                     </MudItem>
                     <MudItem xs="12">
                         <MudTextField T="string" Label="Observações gerais" Variant="Variant.Outlined" Margin="Margin.Dense"
@@ -397,13 +381,6 @@
                             <MudText Typo="Typo.body2" Style="color:#EF4444;">- @TotalDesconto.ToString("C")</MudText>
                         </div>
                     }
-                    @if (cabecalho.Frete > 0)
-                    {
-                        <div style="display:flex; justify-content:space-between; padding:5px 0;">
-                            <MudText Typo="Typo.body2" Style="color:#64748B;">Frete</MudText>
-                            <MudText Typo="Typo.body2" Style="color:#E2E8F0;">@cabecalho.Frete.ToString("C")</MudText>
-                        </div>
-                    }
                 </div>
 
                 <div style="background:#0D1117; border-radius:10px; padding:14px; border:0.5px solid #1E293B; margin-top:12px;">
@@ -437,6 +414,7 @@
 
     private int orcamentosCriados;
     private readonly List<ClienteListItem> clientes = new();
+    private string vendedorLogado = "Admin";
 
     private CabecalhoOrcamento cabecalho = new()
     {
@@ -452,12 +430,26 @@
 
     private double Subtotal       => itens.Sum(i => i.ValorUnitario * i.Quantidade);
     private double TotalDesconto  => itens.Sum(i => i.ValorUnitario * i.Quantidade * i.Desconto / 100);
-    private double TotalGeral     => Subtotal - TotalDesconto + cabecalho.Frete;
+    private double TotalGeral     => Subtotal - TotalDesconto;
 
     protected override async Task OnInitializedAsync()
     {
         await CarregarDadosAsync();
         NovoOrcamento();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        vendedorLogado = await JS.InvokeAsync<string?>("localStorage.getItem", "vertex_user_name")
+            ?? await JS.InvokeAsync<string?>("localStorage.getItem", "vertex_user")
+            ?? "Admin";
+        cabecalho.Vendedor = vendedorLogado;
+        StateHasChanged();
     }
 
     private async Task CarregarDadosAsync()
@@ -537,7 +529,7 @@
             Id = $"ORC-{DateTime.Now:yyyyMMddHHmmss}",
             Validade = 15,
             CondicaoPagamento = "À vista",
-            Vendedor = "Admin"
+            Vendedor = vendedorLogado
         };
 
         var cliente = clientes.FirstOrDefault();
@@ -580,8 +572,8 @@
                 ClienteTelefone = cliente.Telefone,
                 ClienteEmail = cliente.Email,
                 CondicaoPagamento = cabecalho.CondicaoPagamento,
-                Validade = cabecalho.Validade,
-                Frete = (decimal)cabecalho.Frete,
+                Validade = 0,
+                Frete = 0,
                 Observacoes = cabecalho.Observacoes
             };
 

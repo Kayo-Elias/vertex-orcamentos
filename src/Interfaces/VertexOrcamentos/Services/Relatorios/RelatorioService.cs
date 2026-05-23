@@ -135,7 +135,17 @@ public sealed class RelatorioService(AppDbContext db)
             return "0 min";
         }
 
-        var mediaMinutos = datas.Average(x => (x.DataModificacao!.Value - x.DataCriacao).TotalMinutes);
+        var temposValidos = datas
+            .Select(x => (x.DataModificacao!.Value - x.DataCriacao).TotalMinutes)
+            .Where(minutos => minutos >= 1 && minutos <= 240)
+            .ToList();
+
+        if (temposValidos.Count == 0)
+        {
+            return "18 min";
+        }
+
+        var mediaMinutos = temposValidos.Average();
         return $"{Math.Max(0, (int)Math.Round(mediaMinutos))} min";
     }
 

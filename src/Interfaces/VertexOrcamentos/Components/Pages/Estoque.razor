@@ -8,10 +8,14 @@
 
 <PageHeader Titulo="Estoque" Subtitulo="Gerencie e acompanhe o estoque da empresa de forma prática e organizada." Imagem="https://www.shutterstock.com/image-photo/business-analyst-managing-data-infrastructure-600nw-2740363657.jpg" ImagemPosicao="center 53%" />
 
-<MudStack Row="true" Spacing="2" Wrap="Wrap.Wrap" Class="mb-6">
+<MudStack Row="true" Spacing="2" Wrap="Wrap.Wrap" AlignItems="AlignItems.Center" Class="mb-6 action-toolbar">
     <MudButton Variant="Variant.Filled" Color="Color.Success" StartIcon="@Icons.Material.Filled.Add" Style="border-radius:12px; font-weight:800;" OnClick="NovoProduto">Criar</MudButton>
     <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Style="border-radius:12px; font-weight:800; color:white;" Disabled="@(selecionado is null)" OnClick="EditarSelecionadoAsync">Editar</MudButton>
-    <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete" Style="border-radius:12px; font-weight:800;" Disabled="@(selecionado is null)" OnClick="ExcluirSelecionadoAsync">Excluir</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete" Style="border-radius:12px; font-weight:800;" OnClick="ExcluirSelecionadosAsync">@(modoExclusao ? $"Excluir ({selecionadosExclusao.Count})" : "Excluir")</MudButton>
+    @if (modoExclusao)
+    {
+        <MudButton Variant="Variant.Outlined" Color="Color.Default" Style="border-radius:12px; font-weight:800;" OnClick="CancelarModoExclusao">Cancelar</MudButton>
+    }
 </MudStack>
 
 <MudGrid Class="mt-2 mb-4">
@@ -30,13 +34,17 @@
 
 <MudPaper Class="usuarios-box">
     <MudTable Items="@produtos" Hover="true" Loading="@carregando" Striped="false" Bordered="false" Dense="false" Class="usuarios-table estoque-table" RowClass="custom-row" @bind-SelectedItem="selecionado">
-        <HeaderContent><MudTh>ID</MudTh><MudTh>Categoria</MudTh><MudTh>Nome</MudTh><MudTh>Valor</MudTh><MudTh>Quantidade</MudTh><MudTh>Ações</MudTh></HeaderContent>
+        <HeaderContent><MudTh>ID</MudTh><MudTh>Categoria</MudTh><MudTh>Nome</MudTh><MudTh>Valor</MudTh><MudTh>Quantidade</MudTh>@if (modoExclusao){<MudTh Class="select-col">Selecionar</MudTh>}<MudTh>Ações</MudTh></HeaderContent>
         <RowTemplate>
                 <MudTd><div class="user-info"><MudAvatar Size="Size.Medium" Color="Color.Primary">@PrimeiraLetra(context.Nome)</MudAvatar><div><MudText Typo="Typo.body1">#@context.Codigo</MudText><MudText Typo="Typo.caption" Class="user-id">Produto em estoque</MudText></div></div></MudTd>
                 <MudTd>@context.Categoria</MudTd>
                 <MudTd>@context.Nome</MudTd>
                 <MudTd><MudText Typo="Typo.body1" Style="font-weight:600;">@context.Valor.ToString("C", Cultura)</MudText></MudTd>
                 <MudTd><MudChip T="string" Color="@(context.Quantidade <= 5 ? Color.Warning : Color.Info)" Variant="Variant.Filled" Size="Size.Small">@context.Quantidade @context.Unidade</MudChip></MudTd>
+                @if (modoExclusao)
+                {
+                    <MudTd Class="select-col"><MudCheckBox T="bool" Value="@selecionadosExclusao.Contains(context.Id)" ValueChanged="@((bool marcado) => AlternarSelecaoExclusao(context.Id, marcado))" Color="Color.Error" /></MudTd>
+                }
                 <MudTd><div class="acoes-area"><MudTooltip Text="Editar"><MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Default" Style="color: #42A5F5;" Size="Size.Small" Class="action-btn" OnClick="@(() => EditarProdutoAsync(context.Id))" /></MudTooltip><MudTooltip Text="Excluir"><MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" Class="action-btn" OnClick="@(() => ExcluirProdutoAsync(context.Id))" /></MudTooltip></div></MudTd>
         </RowTemplate>
     </MudTable>
@@ -71,13 +79,14 @@
 .acoes-area { display: flex; gap: 6px; align-items: center; }
 .action-btn { transition: 0.2s; border-radius: 10px; }
 .action-btn:hover { transform: scale(1.1); background-color: rgba(236, 173, 173, 0.08); }
+.action-toolbar .mud-button-root { min-height: 40px; }
+.select-col { width: 88px !important; text-align: center !important; }
 .usuarios-table { min-width: 920px; }
 .estoque-table th:nth-child(1), .estoque-table td:nth-child(1) { width: 24%; }
 .estoque-table th:nth-child(2), .estoque-table td:nth-child(2) { width: 16%; }
 .estoque-table th:nth-child(3), .estoque-table td:nth-child(3) { width: 26%; }
 .estoque-table th:nth-child(4), .estoque-table td:nth-child(4) { width: 14%; }
 .estoque-table th:nth-child(5), .estoque-table td:nth-child(5) { width: 12%; }
-.estoque-table th:nth-child(6), .estoque-table td:nth-child(6) { width: 8%; }
 .mud-table { background: rgba(22, 57, 109, 0.5) !important; width: 100% !important; table-layout: fixed; }
 .mud-table-head th { color: white !important; font-size: 15px; font-weight: 600; border-bottom: 1px solid rgba(151, 179, 190, 0.48); white-space: nowrap; }
 .mud-table-body td { color: white !important; border-bottom: 1px solid rgba(151, 179, 190, 0.48); vertical-align: middle; overflow-wrap: anywhere; }
@@ -100,6 +109,8 @@
     private string? busca;
     private bool carregando;
     private bool formAberto;
+    private bool modoExclusao;
+    private readonly HashSet<Guid> selecionadosExclusao = [];
 
     protected override async Task OnInitializedAsync() => await CarregarAsync();
 
@@ -110,6 +121,34 @@
     private async Task EditarProdutoAsync(Guid id) { var produto = await EstoqueService.ObterAsync(id); if (produto is null) return; form = produto; formAberto = true; }
     private async Task SalvarAsync() { if (mudForm is null) return; await mudForm.ValidateAsync(); if (!mudForm.IsValid) return; if (form.Id.HasValue) await EstoqueService.AtualizarAsync(form.Id.Value, form); else await EstoqueService.CriarAsync(form); Snackbar.Add("Produto salvo com sucesso.", Severity.Success); formAberto = false; await CarregarAsync(); }
     private async Task ExcluirSelecionadoAsync() { if (selecionado is not null) await ExcluirProdutoAsync(selecionado.Id); }
+    private async Task ExcluirSelecionadosAsync()
+    {
+        if (!modoExclusao)
+        {
+            modoExclusao = true;
+            selecionadosExclusao.Clear();
+            Snackbar.Add("Selecione os produtos que deseja excluir.", Severity.Info);
+            return;
+        }
+
+        if (selecionadosExclusao.Count == 0)
+        {
+            Snackbar.Add("Marque pelo menos um produto para excluir.", Severity.Warning);
+            return;
+        }
+
+        foreach (var id in selecionadosExclusao.ToList())
+        {
+            await EstoqueService.ExcluirAsync(id);
+        }
+
+        Snackbar.Add("Produtos removidos ou inativados com sucesso.", Severity.Success);
+        CancelarModoExclusao();
+        await CarregarAsync();
+    }
+
+    private void AlternarSelecaoExclusao(Guid id, bool marcado) { if (marcado) selecionadosExclusao.Add(id); else selecionadosExclusao.Remove(id); }
+    private void CancelarModoExclusao() { modoExclusao = false; selecionadosExclusao.Clear(); }
     private async Task ExcluirProdutoAsync(Guid id) { await EstoqueService.ExcluirAsync(id); Snackbar.Add("Produto removido ou inativado com sucesso.", Severity.Success); await CarregarAsync(); }
     private void FecharForm() => formAberto = false;
     private static string PrimeiraLetra(string? valor) => string.IsNullOrWhiteSpace(valor) ? "?" : valor.Trim()[0].ToString().ToUpperInvariant();

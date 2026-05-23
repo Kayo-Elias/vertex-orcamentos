@@ -1,6 +1,7 @@
 @page "/usuarios"
 @inject UsuarioService UsuarioService
 @inject ISnackbar Snackbar
+@inject IJSRuntime JS
 
 <PageTitle>Vertex | Usuarios</PageTitle>
 
@@ -13,13 +14,16 @@
             </MudText>
         </div>
 
-        <MudButton Variant="Variant.Filled"
-                   Color="Color.Primary"
-                   Style="border-radius: 12px; font-weight:800; color:white;"
-                   StartIcon="@Icons.Material.Filled.PersonAdd"
-                   OnClick="NovoUsuario">
-            Criar Usuario
-        </MudButton>
+        @if (usuarioAdmin)
+        {
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Style="border-radius: 12px; font-weight:800; color:white;"
+                       StartIcon="@Icons.Material.Filled.PersonAdd"
+                       OnClick="NovoUsuario">
+                Criar Usuario
+            </MudButton>
+        }
     </div>
 
     <MudPaper Class="filter-box" Elevation="0">
@@ -37,6 +41,13 @@
     @if (!string.IsNullOrWhiteSpace(mensagemErro))
     {
         <MudAlert Severity="Severity.Error" Class="mb-4">@mensagemErro</MudAlert>
+    }
+
+    @if (!usuarioAdmin)
+    {
+        <MudAlert Severity="Severity.Info" Class="mb-4">
+            Seu perfil de funcionario permite consultar usuarios, mas apenas administradores podem criar, editar ou inativar contas.
+        </MudAlert>
     }
 
     <MudPaper Elevation="8" Class="usuarios-box">
@@ -93,7 +104,7 @@
                                                Style="color: #42A5F5;"
                                                Size="Size.Small"
                                                Class="action-btn"
-                                               Disabled="@context.IsAdmin"
+                                               Disabled="@(!usuarioAdmin)"
                                                OnClick="@(() => EditarUsuarioAsync(context.Id))" />
                             </MudTooltip>
 
@@ -102,7 +113,7 @@
                                                Color="Color.Error"
                                                Size="Size.Small"
                                                Class="action-btn"
-                                               Disabled="@(!context.Ativo || context.IsAdmin)"
+                                               Disabled="@(!usuarioAdmin || !context.Ativo)"
                                                OnClick="@(() => InativarUsuarioAsync(context.Id))" />
                             </MudTooltip>
                         </div>
@@ -384,10 +395,24 @@ html, body {
     private bool carregando;
     private bool salvando;
     private bool formAberto;
+    private bool usuarioAdmin;
 
     protected override async Task OnInitializedAsync()
     {
         await CarregarUsuariosAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        var perfil = await JS.InvokeAsync<string?>("localStorage.getItem", "vertex_user_role");
+        usuarioAdmin = string.Equals(perfil, "Admin", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(perfil, "Administrador", StringComparison.OrdinalIgnoreCase);
+        StateHasChanged();
     }
 
     private async Task BuscarAsync(string termo)
@@ -417,12 +442,24 @@ html, body {
 
     private void NovoUsuario()
     {
+        if (!usuarioAdmin)
+        {
+            Snackbar.Add("Apenas administradores podem criar usuarios.", Severity.Warning);
+            return;
+        }
+
         form = new UsuarioFormModel();
         formAberto = true;
     }
 
     private async Task EditarUsuarioAsync(Guid id)
     {
+        if (!usuarioAdmin)
+        {
+            Snackbar.Add("Apenas administradores podem editar usuarios.", Severity.Warning);
+            return;
+        }
+
         var usuario = await UsuarioService.ObterAsync(id);
         if (usuario is null)
         {
@@ -436,6 +473,12 @@ html, body {
 
     private async Task SalvarUsuarioAsync()
     {
+        if (!usuarioAdmin)
+        {
+            Snackbar.Add("Apenas administradores podem salvar usuarios.", Severity.Warning);
+            return;
+        }
+
         if (mudForm is null)
         {
             return;
@@ -477,6 +520,12 @@ html, body {
 
     private async Task InativarUsuarioAsync(Guid id)
     {
+        if (!usuarioAdmin)
+        {
+            Snackbar.Add("Apenas administradores podem inativar usuarios.", Severity.Warning);
+            return;
+        }
+
         try
         {
             await UsuarioService.InativarAsync(id);
