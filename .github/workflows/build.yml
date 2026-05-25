@@ -1,0 +1,30 @@
+name: Build e Testes - Vertex Orçamentos
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    name: Compilar e Validar
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+
+      - name: Restaurar dependências
+        run: dotnet restore src/Interfaces/VertexOrcamentos/VertexOrcamentos.csproj
+
+      - name: Compilar projeto
+        run: dotnet build src/Interfaces/VertexOrcamentos/VertexOrcamentos.csproj --no-restore --configuration Release
+
+      - name: Verificar build bem-sucedido
+        run: echo "✅ Build concluído com sucesso!"
